@@ -1,0 +1,61 @@
+rules_version = '2';
+
+// Ақылды кесте — Cloud Firestore қауіпсіздік ережелері
+// Firebase Console → Firestore Database → Rules бетіне толық көшіріп, Publish басыңыз.
+//
+//   meta/setup              — алғашқы әкімші құрылғанын белгілейді (бір рет қана)
+//   users/{uid}             — профиль: name, login, email, role, active, created, lastLogin, summary
+//   states/{uid}            — мектеп деректері (бөліктер саны)
+//   states/{uid}/chunks/{i} — деректердің JSON бөліктері
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function myPath() { return /databases/$(database)/documents/users/$(request.auth.uid); }
+    function isActive() { return signedIn() && exists(myPath()) && get(myPath()).data.active == true; }
+    function isAdmin() { return isActive() && get(myPath()).data.role == 'admin'; }
+    function validProfile(d) {
+      return d.keys().hasAll(['name', 'login', 'role', 'active'])
+        && d.name is string && d.name.size() > 0 && d.name.size() <= 100
+        && d.login is string && d.login.size() >= 3 && d.login.size() <= 100
+        && d.role in ['admin', 'user']
+        && d.active is bool;
+    }
+
+    // Алғашқы әкімші: тек meta/setup әлі жоқ кезде, бір рет
+    match /meta/setup {
+      allow get: if true;
+      allow create: if signedIn() && request.resource.data.admin == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    match /users/{uid} {
+      allow get: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow list: if isAdmin();
+
+      // 1) алғашқы әкімші өзін құрады (meta/setup-пен бір пакетте)
+      allow create: if signedIn() && request.auth.uid == uid
+        && !exists(/databases/$(database)/documents/meta/setup)
+        && getAfter(/databases/$(database)/documents/meta/setup).data.admin == uid
+        && validProfile(request.resource.data)
+        && request.resource.data.role == 'admin' && request.resource.data.active == true;
+      // 2) қалған пайдаланушыларды тек әкімші тіркейді
+      allow create: if isAdmin() && validProfile(request.resource.data);
+
+      // Әкімші бәрін өзгертеді; пайдаланушы өзінің тек lastLogin, summary өрістерін
+      allow update: if (isAdmin() && validProfile(request.resource.data))
+        || (request.auth.uid == uid && isActive()
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastLogin', 'summary']));
+      allow delete: if isAdmin() && request.auth.uid != uid;
+    }
+
+    // Мектеп деректері: иесі немесе әкімші
+    match /states/{uid} {
+      allow read, write: if isActive() && (request.auth.uid == uid || isAdmin());
+      match /chunks/{chunk} {
+        allow read, write: if isActive() && (request.auth.uid == uid || isAdmin());
+      }
+    }
+  }
+}

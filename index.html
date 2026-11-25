@@ -1,0 +1,3244 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Smart Schedule KZ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+/* =========================================================
+   style.css — Ақылды кесте
+   ========================================================= */
+:root {
+  --bg: #f4f6fb;
+  --surface: #ffffff;
+  --text: #0f172a;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --accent: #0e7490;
+  --accent-2: #f5b301;
+  --accent-soft: #e0f2f7;
+  --ok: #15803d;
+  --ok-soft: #dcfce7;
+  --warn: #b45309;
+  --warn-soft: #fef3c7;
+  --bad: #b91c1c;
+  --bad-soft: #fee2e2;
+  --radius: 12px;
+  --shadow: 0 1px 2px rgba(15, 23, 42, .06), 0 4px 16px rgba(15, 23, 42, .05);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px; color: var(--text); background: var(--bg); line-height: 1.45;
+}
+
+/* ---------- Жоғарғы панель ---------- */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 14px 24px; background: linear-gradient(120deg, #0b5566, #0e7490 60%, #1595a8);
+  color: #fff;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.logo {
+  width: 40px; height: 40px; display: grid; place-items: center; border-radius: 10px;
+  background: var(--accent-2); color: #0b3a45; font-size: 22px; font-weight: 700;
+}
+.brand-title { font-size: 18px; font-weight: 700; letter-spacing: .2px; }
+.brand-sub { font-size: 12px; opacity: .8; }
+.top-actions { display: flex; align-items: center; gap: 10px; }
+.lang-switch { display: flex; background: rgba(255, 255, 255, .15); border-radius: 8px; padding: 3px; }
+.lang-switch button {
+  border: 0; background: transparent; color: #fff; padding: 6px 12px; border-radius: 6px;
+  font-weight: 600; cursor: pointer; font-family: inherit;
+}
+.lang-switch button.active { background: #fff; color: var(--accent); }
+.topbar .btn.ghost { background: rgba(255, 255, 255, .12); color: #fff; border-color: rgba(255, 255, 255, .25); }
+
+/* ---------- Табтар ---------- */
+.tabs {
+  display: flex; gap: 4px; padding: 0 24px; background: var(--surface);
+  border-bottom: 1px solid var(--line); overflow-x: auto; position: sticky; top: 0; z-index: 5;
+}
+.tabs button {
+  border: 0; background: none; padding: 14px 14px; font: inherit; font-weight: 500;
+  color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap;
+}
+.tabs button:hover { color: var(--text); }
+.tabs button.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+
+main { padding: 20px 24px 48px; max-width: 1500px; margin: 0 auto; }
+.tab { display: none; }
+.tab.active { display: block; animation: fade .2s ease; }
+@keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+/* ---------- Карточкалар ---------- */
+.card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 18px 20px; margin-bottom: 18px; box-shadow: var(--shadow);
+}
+.card h2 { font-size: 16px; margin: 0 0 12px; }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.card-head h2 { margin: 0; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 18px; }
+.grid2 .card { margin-bottom: 0; }
+.grid2 + .card { margin-top: 18px; }
+.hint { color: var(--muted); font-size: 13px; margin: 0 0 12px; }
+.empty { color: var(--muted); text-align: center; padding: 28px; }
+.badge { background: var(--accent-soft); color: var(--accent); padding: 2px 10px; border-radius: 99px; font-weight: 600; }
+.scroll { overflow-x: auto; }
+
+/* ---------- Формалар ---------- */
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; font-weight: 500; }
+.field > span { font-size: 13px; color: var(--muted); }
+.field.inline { flex-direction: row; align-items: center; margin: 0; }
+input, select, textarea {
+  font: inherit; color: inherit; padding: 8px 10px; border: 1px solid var(--line);
+  border-radius: 8px; background: #fff; outline: none;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+textarea { resize: vertical; font-family: ui-monospace, monospace; font-size: 13px; }
+input.num { width: 70px; text-align: center; }
+.teacher-form { display: grid; grid-template-columns: 1fr 160px 180px; gap: 12px; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 6px; font: inherit; font-weight: 600;
+  padding: 8px 14px; border-radius: 8px; border: 1px solid var(--line); background: #fff;
+  color: var(--text); cursor: pointer; transition: background .15s, transform .05s;
+}
+.btn:hover { background: #f8fafc; }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: .55; cursor: wait; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.primary:hover { background: #0b6175; }
+.btn.danger { color: var(--bad); }
+.btn.sm { padding: 4px 10px; font-size: 12px; }
+.btn-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.btn-row.end { justify-content: flex-end; margin-top: 16px; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.spacer { flex: 1; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  border: 1px solid var(--line); background: #fff; border-radius: 99px; padding: 6px 12px;
+  font: inherit; font-size: 13px; cursor: pointer; border-left: 4px solid var(--c);
+}
+.chip.on { background: var(--c); color: #fff; border-color: var(--c); font-weight: 600; }
+.tag {
+  display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 12px; margin: 1px 0;
+  background: color-mix(in srgb, var(--c) 14%, white); color: color-mix(in srgb, var(--c) 70%, black);
+}
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
+
+/* ---------- Кестелер ---------- */
+.tbl { border-collapse: collapse; width: 100%; }
+.tbl th, .tbl td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
+.tbl th { font-size: 12px; text-transform: uppercase; letter-spacing: .4px; color: var(--muted); font-weight: 600; background: #f8fafc; }
+.tbl.plan td, .tbl.plan th { text-align: center; }
+.tbl.plan td.subj { text-align: left; white-space: nowrap; }
+.tbl.plan small { display: block; color: var(--muted); font-size: 11px; }
+.tbl tr.total td { font-weight: 700; background: #f8fafc; }
+.tbl tr.muted td { color: var(--muted); }
+td.bad { color: var(--bad); font-weight: 700; }
+.nowrap { white-space: nowrap; }
+.tbl.assign td { padding: 4px; text-align: center; }
+.tbl.assign td.na { background: repeating-linear-gradient(45deg, #f8fafc, #f8fafc 4px, #f1f5f9 4px, #f1f5f9 8px); }
+.tbl.assign th.vert { vertical-align: bottom; padding: 6px 2px; }
+.tbl.assign th.vert span { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; text-transform: none; }
+.as-sel { font-size: 12px; padding: 4px; max-width: 130px; display: block; margin: 2px auto; }
+.as-sel.empty { border-color: var(--bad); background: var(--bad-soft); }
+.barcell { width: 160px; }
+.mini-bar { height: 8px; background: #eef2f7; border-radius: 99px; overflow: hidden; }
+.mini-bar i { display: block; height: 100%; background: var(--accent); border-radius: 99px; }
+.mini-bar.over i { background: var(--bad); }
+
+/* Сабақ кестесі */
+.tt { border-collapse: separate; border-spacing: 4px; width: 100%; }
+.tt th { font-size: 12px; color: var(--muted); font-weight: 600; padding: 6px; }
+.tt td.pn { font-weight: 700; color: var(--muted); text-align: center; width: 32px; }
+.tt td.bell { font-size: 11px; color: var(--muted); white-space: nowrap; width: 90px; }
+.tt td.cell {
+  background: color-mix(in srgb, var(--c) 12%, white); border-left: 4px solid var(--c);
+  border-radius: 8px; padding: 6px 8px; min-width: 120px; height: 52px; cursor: pointer;
+  transition: transform .08s, box-shadow .15s;
+}
+.tt td.cell:hover { box-shadow: 0 2px 8px rgba(0, 0, 0, .08); }
+.tt td.cell.free { background: #f8fafc; border-left: 4px dashed var(--line); }
+.tt td.cell.selected { outline: 3px solid var(--accent-2); transform: scale(1.02); }
+.tt td.cell.conflict { background: var(--bad-soft); border-left-color: var(--bad); }
+.tt .s { font-weight: 600; font-size: 13px; }
+.tt .tch { font-size: 11px; color: var(--muted); }
+.tt.all td.cell { min-width: 100px; height: 44px; padding: 4px 6px; }
+.tt.all .s { font-size: 12px; }
+.tt.all tr.day-start td { border-top: 0; }
+.tt.all tr.day-start > td { box-shadow: inset 0 3px 0 -1px transparent; }
+.tt td.dayname { background: var(--accent); color: #fff; border-radius: 8px; width: 32px; text-align: center; font-weight: 700; }
+.tt td.dayname span { writing-mode: vertical-rl; transform: rotate(180deg); }
+
+.tbl.ktp td[contenteditable] { min-width: 120px; cursor: text; }
+.tbl.ktp td[contenteditable]:focus { outline: 2px solid var(--accent); background: var(--accent-soft); }
+.tbl.ktp td.pre { white-space: pre-line; }
+.tbl.ktp small { color: var(--muted); }
+
+/* ---------- Ескертулер ---------- */
+.alert { padding: 10px 14px; border-radius: 8px; margin: 10px 0; background: var(--accent-soft); }
+.alert.ok { background: var(--ok-soft); color: var(--ok); }
+.alert.warn { background: var(--warn-soft); color: var(--warn); }
+.alert.bad { background: var(--bad-soft); color: var(--bad); }
+
+.progress { position: relative; height: 26px; background: #eef2f7; border-radius: 8px; margin-top: 14px; overflow: hidden; }
+.progress .bar { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), #22a7bd); transition: width .2s; }
+.progress span { position: absolute; inset: 0; display: grid; place-items: center; font-size: 12px; font-weight: 600; }
+
+.spinner {
+  display: inline-block; width: 14px; height: 14px; border: 2px solid var(--accent-soft);
+  border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; vertical-align: -2px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- AI ---------- */
+.ai-output { margin-top: 14px; max-height: 560px; overflow: auto; }
+.ai-output h4 { margin: 14px 0 6px; color: var(--accent); }
+.ai-output p, .msg p { margin: 6px 0; }
+.chat-card { display: flex; flex-direction: column; }
+.chat { flex: 1; min-height: 320px; max-height: 520px; overflow: auto; display: flex; flex-direction: column; gap: 10px; padding: 4px; }
+.msg { max-width: 85%; padding: 10px 14px; border-radius: 12px; }
+.msg.user { align-self: flex-end; background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
+.msg.assistant { align-self: flex-start; background: #f1f5f9; border-bottom-left-radius: 4px; }
+.msg h4 { margin: 8px 0 4px; }
+.msg ul, .ai-output ul { margin: 4px 0; padding-left: 20px; }
+.chat-input { display: flex; gap: 8px; margin-top: 12px; }
+.chat-input textarea { flex: 1; font-family: inherit; }
+
+/* ---------- Диалог, тост ---------- */
+dialog { border: 0; border-radius: var(--radius); padding: 0; box-shadow: 0 20px 60px rgba(0, 0, 0, .25); width: min(480px, 92vw); }
+dialog::backdrop { background: rgba(15, 23, 42, .45); }
+.dlg { padding: 22px; }
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translate(-50%, 20px); opacity: 0;
+  background: #0f172a; color: #fff; padding: 10px 18px; border-radius: 10px; transition: all .25s;
+  pointer-events: none; z-index: 50; max-width: 90vw;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.toast.error { background: var(--bad); }
+
+/* ---------- Мобильді ---------- */
+@media (max-width: 720px) {
+  .topbar, .tabs, main { padding-left: 14px; padding-right: 14px; }
+  .brand-sub { display: none; }
+  .teacher-form { grid-template-columns: 1fr; }
+  .grid2 { grid-template-columns: 1fr; }
+}
+
+/* ---------- Басып шығару ---------- */
+.print-title { display: none; }
+@media print {
+  body { background: #fff; font-size: 11px; }
+  .no-print, .tabs, .topbar, .toast, .hint, #schStatus, #ktpStatus { display: none !important; }
+  main { padding: 0; max-width: none; }
+  .card { box-shadow: none; border: 0; padding: 0; }
+  .print-title { display: block; }
+  .tt td.cell { -webkit-print-color-adjust: exact; print-color-adjust: exact; height: auto; }
+  .tbl.ktp td { border: 1px solid #999; }
+  @page { size: A4 landscape; margin: 10mm; }
+}
+
+
+/* ---------- v2: аккаунттар және жаңартылған дизайн ---------- */
+[hidden] { display: none !important; }
+:root { --radius: 14px; }
+body {
+  background:
+    radial-gradient(1100px 520px at 105% -10%, #d9f0f5 0, transparent 60%),
+    radial-gradient(900px 480px at -10% 110%, #fdf1cf 0, transparent 55%),
+    var(--bg);
+  background-attachment: fixed; min-height: 100vh;
+}
+.topbar { box-shadow: 0 2px 12px rgba(11, 85, 102, .25); }
+.topbar .btn.ghost:hover { background: rgba(255, 255, 255, .22); }
+.tabs { gap: 6px; padding: 8px 24px; background: rgba(255, 255, 255, .92); backdrop-filter: blur(8px); }
+.tabs button { padding: 8px 14px; border-radius: 99px; border-bottom: 0; transition: background .15s, color .15s; }
+.tabs button:hover { background: #f1f5f9; }
+.tabs button.active { background: var(--accent); color: #fff; border-bottom: 0; box-shadow: 0 2px 8px rgba(14, 116, 144, .3); }
+.card { transition: box-shadow .2s; }
+.card:hover { box-shadow: 0 1px 2px rgba(15, 23, 42, .06), 0 8px 24px rgba(15, 23, 42, .08); }
+.card h2:not(.print-title) { display: flex; align-items: center; gap: 8px; }
+.card h2:not(.print-title)::before { content: ''; width: 4px; height: 16px; border-radius: 2px; background: var(--accent-2); flex: none; }
+.muted { color: var(--muted); }
+code { background: #f1f5f9; padding: 1px 6px; border-radius: 5px; font-size: 12px; }
+
+/* Пайдаланушы чипі */
+.user-chip { display: flex; align-items: center; gap: 10px; padding: 4px 14px 4px 4px; border-radius: 99px; background: rgba(255, 255, 255, .14); }
+.avatar {
+  width: 32px; height: 32px; border-radius: 50%; display: inline-grid; place-items: center; flex: none;
+  background: var(--accent-2); color: #0b3a45; font-weight: 700; font-size: 13px;
+}
+.avatar.sm { width: 26px; height: 26px; font-size: 11px; vertical-align: middle; background: var(--accent-soft); color: var(--accent); }
+.user-name { font-weight: 600; font-size: 13px; line-height: 1.2; }
+.user-role { font-size: 11px; opacity: .8; }
+
+/* Кіру беті */
+body.locked .topbar, body.locked .tabs, body.locked main { display: none !important; }
+.auth {
+  min-height: 100vh; display: grid; place-items: center; padding: 24px; position: relative; overflow: hidden;
+  background: linear-gradient(135deg, #0b5566 0%, #0e7490 55%, #1595a8 100%);
+}
+.auth::before, .auth::after { content: ''; position: absolute; border-radius: 50%; pointer-events: none; }
+.auth::before { width: 520px; height: 520px; right: -160px; top: -180px; background: rgba(245, 179, 1, .18); }
+.auth::after { width: 420px; height: 420px; left: -140px; bottom: -160px; background: rgba(255, 255, 255, .08); }
+.auth-card {
+  width: min(420px, 100%); background: #fff; border-radius: 20px; padding: 28px; position: relative; z-index: 1;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .28); animation: fade .3s ease;
+}
+.auth-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 22px; }
+.auth .brand-sub { color: var(--muted); opacity: 1; }
+.auth .lang-switch { background: #f1f5f9; }
+.auth .lang-switch button { color: var(--muted); }
+.auth .lang-switch button.active { background: var(--accent); color: #fff; }
+.auth h2 { margin: 0 0 4px; font-size: 20px; }
+.auth-card .field input { padding: 10px 12px; }
+.check { display: flex; gap: 8px; align-items: center; margin: 2px 0 14px; color: var(--muted); font-size: 13px; cursor: pointer; }
+.btn.block { width: 100%; justify-content: center; padding: 11px; font-size: 15px; }
+.auth-foot { margin: 16px 0 0; text-align: center; color: var(--muted); font-size: 12px; }
+
+/* Пайдаланушылар беті */
+.user-form { display: grid; grid-template-columns: 1.4fr 1fr 1fr 170px auto; gap: 12px; align-items: end; }
+.user-form .field { margin: 0; }
+.pass-row { display: flex; gap: 6px; }
+.pass-row input { flex: 1; min-width: 0; }
+.role-sel { padding: 4px 8px; font-size: 13px; }
+.pill { display: inline-block; padding: 2px 10px; border-radius: 99px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.pill.ok { background: var(--ok-soft); color: var(--ok); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.bad { background: var(--bad-soft); color: var(--bad); }
+.viewas {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 14px; margin-bottom: 16px;
+  border-radius: 10px; background: var(--warn-soft); color: var(--warn); border: 1px solid #fcd34d;
+}
+
+/* Excel импорт */
+.excel-opts { display: flex; gap: 18px; flex-wrap: wrap; margin: 14px 0; }
+.excel-opts label { display: flex; gap: 6px; align-items: center; cursor: pointer; }
+.tag.unknown { background: var(--bad-soft); color: var(--bad); text-decoration: line-through; }
+
+@media (max-width: 900px) {
+  .user-form { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 720px) {
+  .topbar { flex-wrap: wrap; }
+  .top-actions { flex-wrap: wrap; }
+  .user-chip > div { display: none; }
+  .user-chip { padding: 4px; }
+  .user-form { grid-template-columns: 1fr; }
+}
+@media print { .viewas, .auth { display: none !important; } }
+
+/* Синхрондау белгісі */
+.sync { border: 0; background: rgba(255, 255, 255, .12); color: #fff; font: inherit; font-size: 12px; font-weight: 600;
+  padding: 6px 12px; border-radius: 99px; cursor: default; white-space: nowrap; }
+.sync.saving { background: rgba(245, 179, 1, .3); }
+.sync.error { background: #fecaca; color: var(--bad); cursor: pointer; }
+#authBoot { margin: 8px 0; }
+
+</style>
+</head>
+<body class="locked">
+  <!-- КІРУ -->
+  <div id="authScreen" class="auth" hidden>
+    <div class="auth-card">
+      <div class="auth-top">
+        <div class="brand">
+          <span class="logo">▦</span>
+          <div><div class="brand-title" data-i18n="appTitle"></div><div class="brand-sub" data-i18n="appSub"></div></div>
+        </div>
+        <div class="lang-switch"><button type="button" data-lang="kk">ҚАЗ</button><button type="button" data-lang="en">ENG</button></div>
+      </div>
+      <h2 id="authTitle"></h2>
+      <p class="hint" id="authHint"></p>
+      <form id="authForm" autocomplete="on">
+        <label class="field" id="fName"><span data-i18n="fullName"></span><input id="aName" autocomplete="name"></label>
+        <label class="field"><span data-i18n="login"></span><input id="aLogin" autocomplete="username" autocapitalize="off" spellcheck="false"></label>
+        <label class="field"><span data-i18n="password"></span><input id="aPass" type="password" autocomplete="current-password"></label>
+        <label class="field" id="fPass2"><span data-i18n="password2"></span><input id="aPass2" type="password" autocomplete="new-password"></label>
+        <label class="check"><input type="checkbox" id="aRemember" checked> <span data-i18n="remember"></span></label>
+        <div id="authErr" class="alert bad" hidden></div>
+        <button class="btn primary block" id="authSubmit" type="submit"></button>
+      </form>
+      <div id="authBoot" hidden></div>
+      <p class="auth-foot" id="authFoot"></p>
+    </div>
+  </div>
+
+  <header class="topbar no-print">
+    <div class="brand">
+      <span class="logo">▦</span>
+      <div>
+        <div class="brand-title" data-i18n="appTitle"></div>
+        <div class="brand-sub" data-i18n="appSub"></div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="sync" id="syncStatus" type="button"></button>
+      <div class="user-chip"><span class="avatar" id="userAvatar"></span>
+        <div><div class="user-name" id="userName"></div><div class="user-role" id="userRole"></div></div></div>
+      <button class="btn ghost" id="btnPassword" data-i18n-title="changePwd">🔑</button>
+      <button class="btn ghost" id="btnSettings">⚙ <span data-i18n="settings"></span></button>
+      <div class="lang-switch">
+        <button data-lang="kk">ҚАЗ</button><button data-lang="en">ENG</button>
+      </div>
+      <button class="btn ghost" id="btnLogout">⎋ <span data-i18n="logout"></span></button>
+    </div>
+  </header>
+
+  <nav class="tabs no-print" id="tabs">
+    <button data-tab="school" class="active">1. <span data-i18n="tabSchool"></span></button>
+    <button data-tab="teachers">2. <span data-i18n="tabTeachers"></span></button>
+    <button data-tab="plan">3. <span data-i18n="tabPlan"></span></button>
+    <button data-tab="load">4. <span data-i18n="tabLoad"></span></button>
+    <button data-tab="schedule">5. <span data-i18n="tabSchedule"></span></button>
+    <button data-tab="ktp">6. <span data-i18n="tabKtp"></span></button>
+    <button data-tab="ai">✦ <span data-i18n="tabAi"></span></button>
+    <button data-tab="users" id="tabUsersBtn" hidden>👥 <span data-i18n="tabUsers"></span></button>
+  </nav>
+
+  <main>
+    <div id="viewAsBar" class="viewas" hidden></div>
+    <!-- 1. МЕКТЕП -->
+    <section class="tab active" id="tab-school">
+      <div class="grid2">
+        <div class="card">
+          <h2 data-i18n="classesPerGrade"></h2>
+          <p class="hint" data-i18n="splitHint"></p>
+          <table class="tbl" id="gradeTable"></table>
+          <label class="field inline">
+            <span data-i18n="daysPerWeek"></span>
+            <select id="daysPerWeek">
+              <option value="5" data-i18n="days5"></option>
+              <option value="6" data-i18n="days6"></option>
+            </select>
+          </label>
+        </div>
+        <div class="card">
+          <h2 data-i18n="quarters"></h2>
+          <table class="tbl" id="quarterTable"></table>
+          <label class="field">
+            <span data-i18n="holidays"></span>
+            <textarea id="holidays" rows="4"></textarea>
+            <small class="hint" data-i18n="holidaysHint"></small>
+          </label>
+        </div>
+      </div>
+      <div class="card">
+        <h2 data-i18n="dataTitle"></h2>
+        <div class="btn-row">
+          <button class="btn primary" id="btnDemo" data-i18n="loadDemo"></button>
+          <button class="btn" id="btnExport" data-i18n="exportJson"></button>
+          <label class="btn"><span data-i18n="importJson"></span><input type="file" id="fileImport" accept=".json" hidden></label>
+          <button class="btn danger" id="btnReset" data-i18n="resetAll"></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. МҰҒАЛІМДЕР -->
+    <section class="tab" id="tab-teachers">
+      <div class="card">
+        <h2 data-i18n="teachersTitle"></h2>
+        <div class="teacher-form">
+          <label class="field"><span data-i18n="teacherName"></span><input id="tName" type="text"></label>
+          <label class="field small"><span data-i18n="maxHours"></span><input id="tMax" type="number" min="1" max="40" value="24"></label>
+          <label class="field small"><span data-i18n="offDay"></span><select id="tOff"></select></label>
+        </div>
+        <div class="field"><span data-i18n="subjects"></span><div class="chips" id="tSubjects"></div></div>
+        <div class="btn-row">
+          <button class="btn primary" id="btnAddTeacher" data-i18n="addTeacher"></button>
+          <button class="btn" id="btnCancelEdit" data-i18n="cancel" hidden></button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <h2 data-i18n="excelTitle"></h2>
+          <div class="btn-row">
+            <button class="btn" id="btnTemplate">⬇ <span data-i18n="excelTemplate"></span></button>
+            <button class="btn" id="btnExcelExport">⬇ <span data-i18n="excelExport"></span></button>
+            <label class="btn primary">⬆ <span data-i18n="excelChoose"></span><input type="file" id="excelFile" accept=".xlsx,.xls,.csv" hidden></label>
+          </div>
+        </div>
+        <p class="hint" data-i18n="excelHint"></p>
+        <div id="excelPreview"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2 data-i18n="teacherList"></h2><span class="badge" id="teacherCount"></span></div>
+        <div class="scroll"><table class="tbl" id="teacherTable"></table></div>
+      </div>
+    </section>
+
+    <!-- 3. ОҚУ ЖОСПАРЫ -->
+    <section class="tab" id="tab-plan">
+      <div class="card">
+        <div class="card-head">
+          <h2 data-i18n="planTitle"></h2>
+          <button class="btn" id="btnResetPlan" data-i18n="resetPlan"></button>
+        </div>
+        <p class="hint" data-i18n="planHint"></p>
+        <div class="scroll"><table class="tbl plan" id="planTable"></table></div>
+      </div>
+      <div class="card">
+        <h2 data-i18n="annualHours"></h2>
+        <div class="scroll"><table class="tbl plan" id="annualTable"></table></div>
+      </div>
+    </section>
+
+    <!-- 4. ЖҮКТЕМЕ -->
+    <section class="tab" id="tab-load">
+      <div class="card">
+        <div class="card-head">
+          <h2 data-i18n="loadTitle"></h2>
+          <button class="btn primary" id="btnAssign" data-i18n="autoAssign"></button>
+        </div>
+        <p class="hint" data-i18n="loadHint"></p>
+        <div id="assignWarnings"></div>
+        <div class="scroll"><table class="tbl assign" id="assignTable"></table></div>
+      </div>
+      <div class="card">
+        <h2 data-i18n="teacherLoad"></h2>
+        <div class="scroll"><table class="tbl" id="loadTable"></table></div>
+      </div>
+    </section>
+
+    <!-- 5. КЕСТЕ -->
+    <section class="tab" id="tab-schedule">
+      <div class="card no-print">
+        <div class="toolbar">
+          <label class="field inline"><span data-i18n="quarter"></span><select id="schQuarter"></select></label>
+          <label class="field inline"><span data-i18n="view"></span>
+            <select id="schView">
+              <option value="class" data-i18n="byClass"></option>
+              <option value="teacher" data-i18n="byTeacher"></option>
+              <option value="all" data-i18n="allClasses"></option>
+            </select>
+          </label>
+          <label class="field inline" id="schTargetWrap"><span id="schTargetLabel"></span><select id="schTarget"></select></label>
+          <span class="spacer"></span>
+          <button class="btn primary" id="btnGenerate" data-i18n="generate"></button>
+          <button class="btn primary" id="btnGenerateAll" data-i18n="generateAll"></button>
+          <button class="btn" id="btnCsv" data-i18n="exportCsv"></button>
+          <button class="btn" id="btnPrint" data-i18n="print"></button>
+        </div>
+        <div class="progress" id="progress" hidden><div class="bar" id="progressBar"></div><span id="progressText"></span></div>
+        <div id="schStatus"></div>
+        <p class="hint" data-i18n="swapHint"></p>
+      </div>
+      <div id="scheduleOut"></div>
+    </section>
+
+    <!-- 6. ҚТЖ / ОМЖ -->
+    <section class="tab" id="tab-ktp">
+      <div class="card no-print">
+        <h2 data-i18n="ktpTitle"></h2>
+        <p class="hint" data-i18n="ktpHint"></p>
+        <div class="toolbar">
+          <label class="field inline"><span data-i18n="ktpType"></span>
+            <select id="ktpType"><option value="ktp" data-i18n="ktp"></option><option value="omj" data-i18n="omj"></option></select>
+          </label>
+          <label class="field inline"><span data-i18n="classCol"></span><select id="ktpClass"></select></label>
+          <label class="field inline"><span data-i18n="subject"></span><select id="ktpSubject"></select></label>
+          <label class="field inline"><span data-i18n="quarter"></span><select id="ktpQuarter"></select></label>
+          <span class="spacer"></span>
+          <button class="btn" id="btnDates" data-i18n="computeDates"></button>
+          <button class="btn primary" id="btnAiFill">✦ <span data-i18n="aiFill"></span></button>
+          <button class="btn" id="btnKtpCsv" data-i18n="exportCsv"></button>
+          <button class="btn" id="btnKtpPrint" data-i18n="print"></button>
+        </div>
+        <div id="ktpStatus"></div>
+      </div>
+      <div class="card" id="ktpOut"></div>
+    </section>
+
+    <!-- 7. AI -->
+    <section class="tab" id="tab-ai">
+      <div class="grid2">
+        <div class="card">
+          <h2 data-i18n="aiAnalyzeTitle"></h2>
+          <p class="hint" data-i18n="aiAnalyzeHint"></p>
+          <div class="btn-row">
+            <label class="field inline"><span data-i18n="quarter"></span><select id="aiQuarter"></select></label>
+            <button class="btn primary" id="btnAnalyze">✦ <span data-i18n="analyze"></span></button>
+          </div>
+          <div class="ai-output" id="aiAnalysis"></div>
+        </div>
+        <div class="card chat-card">
+          <h2 data-i18n="aiChatTitle"></h2>
+          <div class="chat" id="chatLog"></div>
+          <div class="chat-input">
+            <textarea id="chatInput" rows="2"></textarea>
+            <button class="btn primary" id="btnSend" data-i18n="send"></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. ПАЙДАЛАНУШЫЛАР (әкімші) -->
+    <section class="tab" id="tab-users">
+      <div class="card">
+        <h2 data-i18n="usersAdd"></h2>
+        <p class="hint" data-i18n="usersHint"></p>
+        <div class="user-form">
+          <label class="field"><span data-i18n="fullName"></span><input id="uName"></label>
+          <label class="field"><span data-i18n="login"></span><input id="uLogin" autocapitalize="off" spellcheck="false" placeholder="aigerim.s"></label>
+          <label class="field"><span data-i18n="password"></span>
+            <span class="pass-row"><input id="uPass" type="text" autocomplete="off"><button type="button" class="btn" id="btnGenPwd" title="🎲">🎲</button></span></label>
+          <label class="field"><span data-i18n="role"></span><select id="uRole"></select></label>
+          <button class="btn primary" id="btnAddUser" data-i18n="registerBtn"></button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2 data-i18n="usersList"></h2><span class="btn-row"><span id="usersMode"></span><span class="badge" id="userCount"></span></span></div>
+        <div class="scroll"><table class="tbl" id="userTable"></table></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Баптаулар -->
+  <dialog id="settingsDlg">
+    <form method="dialog" class="dlg">
+      <h2 data-i18n="settingsTitle"></h2>
+      <label class="field"><span data-i18n="provider"></span>
+        <select id="aiProvider">
+          <option value="gemini" data-i18n="provGemini"></option>
+          <option value="claude" data-i18n="provClaude"></option>
+        </select>
+      </label>
+      <label class="field"><span id="apiKeyLabel"></span><input id="apiKey" type="password" autocomplete="off"></label>
+      <small class="hint" id="apiKeyHint"></small>
+      <label class="field"><span data-i18n="model"></span><input id="aiModel" type="text"></label>
+      <div class="btn-row end">
+        <button class="btn" value="cancel" data-i18n="close"></button>
+        <button class="btn primary" id="btnSaveSettings" value="ok" data-i18n="save"></button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="pwdDlg">
+    <form class="dlg" id="pwdForm">
+      <h2 data-i18n="changePwd"></h2>
+      <p class="hint" id="pwdFor"></p>
+      <label class="field" id="pwdOldWrap"><span data-i18n="oldPassword"></span><input id="pwdOld" type="password" autocomplete="current-password"></label>
+      <label class="field"><span data-i18n="newPassword"></span><input id="pwdNew" type="password" autocomplete="new-password"></label>
+      <div id="pwdErr" class="alert bad" hidden></div>
+      <div class="btn-row end">
+        <button type="button" class="btn" id="pwdCancel" data-i18n="close"></button>
+        <button type="submit" class="btn primary" id="pwdSave" data-i18n="save"></button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- Firebase баптауы (бос болса — серверсіз режим) -->
+  <script src="firebase-config.js"></script>
+  <script>
+/* =========================================================
+   i18n.js — Екі тіл: қазақша (kk) / English (en)
+   ========================================================= */
+(function (g) {
+  'use strict';
+  const STR = {
+    kk: {
+      appTitle: 'Ақылды кесте', appSub: '5–11 сыныптар · жылдық / тоқсандық сабақ кестесі',
+      settings: 'Баптаулар',
+      tabSchool: 'Мектеп', tabTeachers: 'Мұғалімдер', tabPlan: 'Оқу жоспары', tabLoad: 'Жүктеме',
+      tabSchedule: 'Кесте', tabKtp: 'ҚТЖ / ОМЖ', tabAi: 'AI көмекші',
+      classesPerGrade: 'Сынып-комплектілер', grade: 'Сынып', classCount: 'Саны',
+      splitGroups: 'Топқа бөлу (24+ оқушы)',
+      splitHint: 'Әр параллельдегі сынып санын көрсетіңіз. 24-тен көп оқушы болса, ағылшын тілі мен информатика 2 топқа бөлінеді.',
+      daysPerWeek: 'Оқу аптасы', days5: '5 күндік', days6: '6 күндік',
+      quarters: 'Тоқсандар (2026–2027)', quarter: 'Тоқсан', start: 'Басы', end: 'Соңы', weeks: 'Апта', schoolDays: 'Оқу күні',
+      holidays: 'Мереке күндері (оқу күнге түсетіндер)', holidaysHint: 'Әр жолға бір күн: ЖЖЖЖ-АА-КК',
+      dataTitle: 'Деректер', loadDemo: 'Демо деректерді жүктеу', exportJson: 'JSON сақтау', importJson: 'JSON ашу',
+      resetAll: 'Барлығын тазалау', confirmReset: 'Барлық деректер өшіріледі. Жалғастырасыз ба?',
+      saved: 'Сақталды', imported: 'Деректер жүктелді', importError: 'Файлды оқу мүмкін болмады',
+      demoLoaded: 'Демо: 14 сынып, 26 мұғалім жүктелді',
+      teachersTitle: 'Мұғалім қосу', teacherList: 'Мұғалімдер тізімі', teacherName: 'Аты-жөні',
+      subjects: 'Пәндері (бірнешеуін таңдауға болады)', maxHours: 'Макс. сағат/апта', offDay: 'Әдістемелік күн',
+      none: '—', addTeacher: 'Қосу', updateTeacher: 'Сақтау', cancel: 'Болдырмау',
+      noTeachers: 'Әзірге мұғалім жоқ. Жоғарыдағы формадан қосыңыз немесе демо деректерді жүктеңіз.',
+      actions: '', edit: 'Өзгерту', del: 'Жою', needName: 'Аты-жөні мен кемінде бір пәнді көрсетіңіз',
+      planTitle: 'Үлгілік оқу жоспары (апталық сағат)',
+      planHint: 'Сағаттар ҚР үлгілік оқу жоспарына сай толтырылған — ағымдағы бұйрықпен салыстырып, қажет болса түзетіңіз. Тоқсан бойынша әртүрлі болса: 1,1,1,2 деп жазыңыз.',
+      subject: 'Пән', weeklyTotal: 'Апталық барлығы', maxWeekly: 'СанПиН шегі', annualHours: 'Жылдық сағат (тоқсандар бойынша)',
+      resetPlan: 'Стандартқа қайтару', total: 'Барлығы',
+      loadTitle: 'Мұғалімдерді сыныптарға тағайындау', autoAssign: '⚡ Автоматты тағайындау',
+      loadHint: 'Компьютер жүктемені тең бөледі және бір сыныптағы туыс пәндерді бір мұғалімге береді. Ұяшықты қолмен өзгертуге болады.',
+      classCol: 'Сынып', teacherLoad: 'Мұғалімдердің жүктемесі (тарификация)', hours: 'Сағат/апта', rate: 'Ставка',
+      unassignedWarn: 'Мұғалімі жоқ пәндер', overloadWarn: 'Шектен асқан жүктеме', notAssigned: '— жоқ —', group: 'топ',
+      assignFirst: 'Алдымен «Жүктеме» бетінде мұғалімдерді тағайындаңыз',
+      generate: 'Кесте құру', generateAll: '4 тоқсанға құру', view: 'Көрініс', byClass: 'Сынып бойынша',
+      byTeacher: 'Мұғалім бойынша', allClasses: 'Жалпы кесте', exportCsv: 'Excel (CSV)', print: 'Басып шығару',
+      swapHint: 'Түзету: бір сыныптағы екі ұяшықты кезекпен басыңыз — орындары ауысады. Қызыл — қайшылық.',
+      notGenerated: 'Бұл тоқсанға кесте әлі құрылмаған', generating: 'Кесте құрылуда…',
+      lesson: 'Сабақ', time: 'Уақыты', period: '№',
+      noConflicts: '✓ Қайшылық жоқ: мұғалімдер қабаттаспайды, терезе жоқ, СанПиН сақталған',
+      conflictsFound: 'Ескерту: қайшылықтар саны', vTeacher: 'мұғалім екі сыныпта', vOffday: 'әдістемелік күні',
+      vTriple: 'пән күніне 2-ден көп', vGap: 'сыныпта терезе',
+      capacityErr: 'Сағат саны күнделікті шектен асып кетті', missingErr: 'Мұғалімі тағайындалмаған',
+      ktpTitle: 'ҚТЖ және ОМЖ', ktpType: 'Құжат', ktp: 'ҚТЖ (күнтізбелік-тақырыптық)', omj: 'ОМЖ (орта мерзімді)',
+      ktpHint: 'Сабақ күндері құрылған кесте мен оқу күнтізбесінен автоматты есептеледі. Тақырыптарды AI толтырады, кейін өзгертуге болады.',
+      computeDates: 'Күндерді есептеу', aiFill: 'AI толтыру', date: 'Күні', section: 'Бөлім', topic: 'Тақырып',
+      objectives: 'Оқу мақсаттары', type: 'Түрі', planned: 'Жоспар бойынша', actual: 'Күнтізбе бойынша',
+      needSchedule: 'Алдымен осы тоқсанға кесте құрыңыз', aiWorking: 'AI жұмыс істеп жатыр…',
+      topicsCol: 'Тақырыптар', results: 'Күтілетін нәтиже', assessment: 'Бағалау', hoursCol: 'Сағат',
+      aiAnalyzeTitle: 'Кестені AI талдауы', aiAnalyzeHint: 'AI кестені СанПиН, пән қиындығы және мұғалім жүктемесі бойынша тексеріп, нақты ұсыныстар береді.',
+      analyze: 'Талдау', aiChatTitle: 'AI чат', chatPlaceholder: 'Сұрақ жазыңыз… (мыс.: 7А сыныбының сәрсенбісі ауыр емес пе?)',
+      send: 'Жіберу', aiNoKey: 'AI үшін «Баптаулар» бөліміне API кілтін енгізіңіз',
+      settingsTitle: 'AI баптаулары', apiKey: 'Claude API кілті',
+      apiKeyHint: 'Кілт тек осы браузерде сақталады. Оны console.anthropic.com сайтынан алуға болады.',
+      provider: 'AI қызметі', provGemini: 'Google Gemini (тегін)', provClaude: 'Anthropic Claude (ақылы)',
+      geminiKey: 'Gemini API кілті',
+      geminiHint: 'Тегін кілт: aistudio.google.com → Get API key → Create API key. Тегін деңгейде тәуліктік сұрау саны шектеулі, ал жіберілген деректерді Google өз өнімдерін жақсартуға пайдалануы мүмкін.',
+      login: 'Логин', password: 'Құпиясөз', password2: 'Құпиясөзді қайталаңыз', fullName: 'Аты-жөні', remember: 'Мені есте сақта',
+      loginTitle: 'Жүйеге кіру', loginHint: 'Логин мен құпиясөзді мектеп әкімшісі береді.',
+      setupTitle: 'Әкімші аккаунтын құру', setupHint: 'Бұл — алғашқы іске қосу. Әкімші кейін басқа пайдаланушыларды өзі тіркейді.',
+      createAdmin: 'Құру және кіру', signIn: 'Кіру', logout: 'Шығу',
+      authWrong: 'Логин немесе құпиясөз қате', authBlocked: 'Аккаунт бұғатталған. Әкімшіге хабарласыңыз.',
+      errLogin: 'Логин: 3–32 таңба (латын әріптері, сандар, . _ -) немесе email', errPass: 'Құпиясөз кемінде 6 таңба болуы керек',
+      errPass2: 'Құпиясөздер сәйкес емес', errName: 'Аты-жөнін жазыңыз', errExists: 'Мұндай логин бұрыннан бар',
+      authFootCloud: 'Деректер бұлтта (Firebase) сақталады — кез келген компьютерден кіре аласыз.',
+      authFootLocal: 'Деректер тек осы браузерде сақталады. Серверді қосу үшін firebase-config.js толтырыңыз.',
+      modeCloud: '☁ Firebase сервері', modeLocal: '💾 Серверсіз режим',
+      loading: 'Жүктелуде…', loadingData: 'Деректер жүктелуде…', retry: 'Қайталау',
+      authNoProfile: 'Бұл аккаунт жүйеде тіркелмеген немесе жойылған. Әкімшіге хабарласыңыз.',
+      errTooMany: 'Тым көп әрекет. Бірнеше минуттан кейін қайталаңыз.', errNetwork: 'Интернет байланысы жоқ',
+      errPermission: 'Рұқсат жоқ (Firestore ережелерін тексеріңіз)', errServer: 'Сервер қатесі',
+      errSdk: 'Firebase кітапханасы жүктелмеді. Интернетті тексеріңіз.', errConfig: 'firebase-config.js баптауы қате',
+      errProvider: 'Firebase Console-да Email/Password кіру тәсілін қосыңыз', errSetupDone: 'Әкімші бұрын құрылған — жай ғана кіріңіз',
+      errLoad: 'Деректерді жүктеу мүмкін болмады.', errQuota: 'Браузер жады толды',
+      syncLocal: 'Браузерде', syncOk: 'Сақталды', syncSaving: 'Сақталуда…', syncError: 'Сақталмады', syncRetry: 'қайталау үшін басыңыз',
+      confirmUnsaved: 'Соңғы өзгерістер серверге сақталмады. Бәрібір шығасыз ба?',
+      resetSent: 'Құпиясөзді қалпына келтіру хаты жіберілді',
+      resetUnsupported: 'Firebase-те әкімші басқа адамның құпиясөзін өзі өзгерте алмайды (бұл үшін ақылы Cloud Functions керек).\n\n• Пайдаланушы құпиясөзін өзі 🔑 арқылы өзгертеді.\n• Логин орнына нақты email берілсе, «Құпиясөз» батырмасы хат жібереді.\n• Ұмытса: бұл аккаунтты бұғаттап, жаңа логинмен тіркеңіз.',
+      roleAdmin: 'Әкімші', roleUser: 'Пайдаланушы', tabUsers: 'Пайдаланушылар',
+      usersAdd: 'Жаңа пайдаланушыны тіркеу', usersList: 'Аккаунттар',
+      usersHint: 'Логин мен құпиясөзді пайдаланушыға беріңіз. 🎲 — кездейсоқ құпиясөз.',
+      role: 'Рөлі', dataCol: 'Деректері', lastLogin: 'Соңғы кіру', status: 'Күйі',
+      active: 'Белсенді', blocked: 'Бұғатталған', block: 'Бұғаттау', unblock: 'Бұғаттан шығару',
+      resetPwd: 'Құпиясөз', openData: 'Ашу', registerBtn: 'Тіркеу', userAdded: 'Тіркелді',
+      confirmDelUser: 'Пайдаланушы және оның барлық деректері өшіріледі. Жалғастырасыз ба?',
+      you: 'сіз', never: 'әлі кірмеген', noData: 'бос', statTeachers: 'мұғ.', statClasses: 'сынып', statSchedules: 'кесте',
+      viewingAs: 'Сіз мына пайдаланушының деректерін көріп отырсыз:', backToMine: 'Өз аккаунтыма оралу',
+      changePwd: 'Құпиясөзді өзгерту', oldPassword: 'Ағымдағы құпиясөз', newPassword: 'Жаңа құпиясөз',
+      pwdChanged: 'Құпиясөз өзгертілді', errOldPwd: 'Ағымдағы құпиясөз қате', lastAdmin: 'Кемінде бір белсенді әкімші қалуы керек',
+      excelTitle: 'Excel-ден жүктеу', excelTemplate: 'Үлгі (шаблон)', excelExport: 'Excel-ге сақтау', excelChoose: 'Файл таңдау',
+      excelHint: 'Бағандар: Аты-жөні · Пәндері (үтірмен бөліп) · Макс. сағат · Әдістемелік күн. Пәндерді қазақша, орысша не ағылшынша жазуға болады. .xlsx, .xls, .csv қабылданады.',
+      excelRows: 'Файлда табылды', excelReady: 'Импортқа дайын', excelAppend: 'Бар тізімге қосу (аты бірдей болса — жаңарту)',
+      excelReplace: 'Тізімді толық ауыстыру', excelImport: 'Импорттау', excelUnknown: 'Танылмаған пән',
+      excelNoSubj: 'пән танылмады — өткізіледі', excelNew: 'жаңа', excelUpdate: 'жаңартылады', excelUpdated: 'жаңартылды',
+      excelDone: 'Импортталды', excelEmpty: 'Файлдан мұғалім табылмады',
+      excelLibErr: 'Excel кітапханасы жүктелмеді (интернет қажет). Файлды CSV түрінде сақтап, қайта жүктеңіз.',
+      confirmReplace: 'Қазіргі мұғалімдер тізімі, жүктеме мен кестелер өшіріледі. Жалғастырасыз ба?',
+      colSubjects: 'Пәндері', teachersSheet: 'Мұғалімдер', subjectsSheet: 'Пәндер тізімі',
+      model: 'Модель', save: 'Сақтау', close: 'Жабу', error: 'Қате'
+    },
+    en: {
+      appTitle: 'Smart Schedule', appSub: 'Grades 5–11 · annual / quarterly timetable',
+      settings: 'Settings',
+      tabSchool: 'School', tabTeachers: 'Teachers', tabPlan: 'Curriculum', tabLoad: 'Workload',
+      tabSchedule: 'Timetable', tabKtp: 'Plans (CTP / MTP)', tabAi: 'AI assistant',
+      classesPerGrade: 'Classes', grade: 'Grade', classCount: 'Count',
+      splitGroups: 'Split groups (24+ students)',
+      splitHint: 'Set the number of classes in each grade. With more than 24 students, English and Computer science are split into 2 groups.',
+      daysPerWeek: 'School week', days5: '5 days', days6: '6 days',
+      quarters: 'Quarters (2026–2027)', quarter: 'Quarter', start: 'Start', end: 'End', weeks: 'Weeks', schoolDays: 'School days',
+      holidays: 'Public holidays on school days', holidaysHint: 'One date per line: YYYY-MM-DD',
+      dataTitle: 'Data', loadDemo: 'Load demo data', exportJson: 'Save JSON', importJson: 'Open JSON',
+      resetAll: 'Clear everything', confirmReset: 'All data will be deleted. Continue?',
+      saved: 'Saved', imported: 'Data loaded', importError: 'Could not read the file',
+      demoLoaded: 'Demo: 14 classes and 26 teachers loaded',
+      teachersTitle: 'Add a teacher', teacherList: 'Teachers', teacherName: 'Full name',
+      subjects: 'Subjects (choose one or more)', maxHours: 'Max hours/week', offDay: 'Methodical day',
+      none: '—', addTeacher: 'Add', updateTeacher: 'Save', cancel: 'Cancel',
+      noTeachers: 'No teachers yet. Add them with the form above or load the demo data.',
+      actions: '', edit: 'Edit', del: 'Delete', needName: 'Enter a name and at least one subject',
+      planTitle: 'Model curriculum (hours per week)',
+      planHint: 'Hours follow the Kazakhstan model curriculum — check them against the current ministry order and adjust if needed. For different hours per quarter type: 1,1,1,2.',
+      subject: 'Subject', weeklyTotal: 'Weekly total', maxWeekly: 'Sanitary limit', annualHours: 'Annual hours (by quarter)',
+      resetPlan: 'Reset to standard', total: 'Total',
+      loadTitle: 'Assigning teachers to classes', autoAssign: '⚡ Auto-assign',
+      loadHint: 'The computer balances workload and gives related subjects in one class to the same teacher. Any cell can be changed by hand.',
+      classCol: 'Class', teacherLoad: 'Teacher workload', hours: 'Hours/week', rate: 'Rate',
+      unassignedWarn: 'Subjects without a teacher', overloadWarn: 'Over the limit', notAssigned: '— none —', group: 'group',
+      assignFirst: 'Assign teachers on the Workload tab first',
+      generate: 'Build timetable', generateAll: 'Build for 4 quarters', view: 'View', byClass: 'By class',
+      byTeacher: 'By teacher', allClasses: 'Whole school', exportCsv: 'Excel (CSV)', print: 'Print',
+      swapHint: 'Editing: click two cells of the same class one after another to swap them. Red means a conflict.',
+      notGenerated: 'No timetable for this quarter yet', generating: 'Building timetable…',
+      lesson: 'Lesson', time: 'Time', period: '#',
+      noConflicts: '✓ No conflicts: no teacher overlaps, no gaps, sanitary rules respected',
+      conflictsFound: 'Warning: conflicts found', vTeacher: 'teacher in two classes', vOffday: 'methodical day',
+      vTriple: 'subject more than twice a day', vGap: 'gap in class day',
+      capacityErr: 'Hours exceed the daily limit', missingErr: 'No teacher assigned',
+      ktpTitle: 'Calendar-thematic & medium-term plans', ktpType: 'Document', ktp: 'CTP (calendar-thematic)', omj: 'MTP (medium-term)',
+      ktpHint: 'Lesson dates are computed from the timetable and the school calendar. AI fills in the topics; you can edit them afterwards.',
+      computeDates: 'Compute dates', aiFill: 'Fill with AI', date: 'Date', section: 'Section', topic: 'Topic',
+      objectives: 'Learning objectives', type: 'Type', planned: 'Planned', actual: 'By calendar',
+      needSchedule: 'Build the timetable for this quarter first', aiWorking: 'AI is working…',
+      topicsCol: 'Topics', results: 'Expected results', assessment: 'Assessment', hoursCol: 'Hours',
+      aiAnalyzeTitle: 'AI timetable review', aiAnalyzeHint: 'AI checks the timetable against sanitary rules, subject difficulty and teacher load, and suggests concrete fixes.',
+      analyze: 'Analyze', aiChatTitle: 'AI chat', chatPlaceholder: 'Ask a question… (e.g. is Wednesday too heavy for 7A?)',
+      send: 'Send', aiNoKey: 'Enter an API key in Settings to use AI',
+      settingsTitle: 'AI settings', apiKey: 'Claude API key',
+      apiKeyHint: 'The key is stored only in this browser. Get one at console.anthropic.com.',
+      provider: 'AI service', provGemini: 'Google Gemini (free)', provClaude: 'Anthropic Claude (paid)',
+      geminiKey: 'Gemini API key',
+      geminiHint: 'Free key: aistudio.google.com → Get API key → Create API key. The free tier has a daily request limit, and Google may use the data you send to improve its products.',
+      login: 'Login', password: 'Password', password2: 'Repeat password', fullName: 'Full name', remember: 'Remember me',
+      loginTitle: 'Sign in', loginHint: 'Your login and password are issued by the school administrator.',
+      setupTitle: 'Create the administrator account', setupHint: 'This is the first launch. The administrator will then register all other users.',
+      createAdmin: 'Create and sign in', signIn: 'Sign in', logout: 'Sign out',
+      authWrong: 'Wrong login or password', authBlocked: 'This account is blocked. Contact the administrator.',
+      errLogin: 'Login: 3–32 characters (Latin letters, digits, . _ -) or an email', errPass: 'The password must be at least 6 characters',
+      errPass2: 'Passwords do not match', errName: 'Enter a full name', errExists: 'This login is already taken',
+      authFootCloud: 'Data is stored in the cloud (Firebase) — you can sign in from any computer.',
+      authFootLocal: 'Data is stored only in this browser. Fill in firebase-config.js to use the server.',
+      modeCloud: '☁ Firebase server', modeLocal: '💾 Offline mode',
+      loading: 'Loading…', loadingData: 'Loading data…', retry: 'Retry',
+      authNoProfile: 'This account is not registered in the system or was deleted. Contact the administrator.',
+      errTooMany: 'Too many attempts. Try again in a few minutes.', errNetwork: 'No internet connection',
+      errPermission: 'Permission denied (check the Firestore rules)', errServer: 'Server error',
+      errSdk: 'Could not load the Firebase library. Check your internet connection.', errConfig: 'firebase-config.js is not set up correctly',
+      errProvider: 'Enable the Email/Password sign-in method in the Firebase Console', errSetupDone: 'The administrator already exists — just sign in',
+      errLoad: 'Could not load the data.', errQuota: 'Browser storage is full',
+      syncLocal: 'In browser', syncOk: 'Saved', syncSaving: 'Saving…', syncError: 'Not saved', syncRetry: 'click to retry',
+      confirmUnsaved: 'The latest changes were not saved to the server. Sign out anyway?',
+      resetSent: 'Password reset email sent',
+      resetUnsupported: 'In Firebase an administrator cannot set another person\'s password directly (that needs paid Cloud Functions).\n\n• Users change their own password with 🔑.\n• If a real email is used instead of a login, the Password button sends a reset email.\n• If someone forgets it: block that account and register a new login.',
+      roleAdmin: 'Administrator', roleUser: 'User', tabUsers: 'Users',
+      usersAdd: 'Register a new user', usersList: 'Accounts',
+      usersHint: 'Give the login and password to the user. 🎲 generates a random password.',
+      role: 'Role', dataCol: 'Data', lastLogin: 'Last sign-in', status: 'Status',
+      active: 'Active', blocked: 'Blocked', block: 'Block', unblock: 'Unblock',
+      resetPwd: 'Password', openData: 'Open', registerBtn: 'Register', userAdded: 'Registered',
+      confirmDelUser: 'The user and all of their data will be deleted. Continue?',
+      you: 'you', never: 'never', noData: 'empty', statTeachers: 'teachers', statClasses: 'classes', statSchedules: 'timetables',
+      viewingAs: 'You are viewing the data of', backToMine: 'Back to my account',
+      changePwd: 'Change password', oldPassword: 'Current password', newPassword: 'New password',
+      pwdChanged: 'Password changed', errOldPwd: 'The current password is wrong', lastAdmin: 'At least one active administrator must remain',
+      excelTitle: 'Import from Excel', excelTemplate: 'Template', excelExport: 'Export to Excel', excelChoose: 'Choose file',
+      excelHint: 'Columns: Full name · Subjects (comma-separated) · Max hours · Methodical day. Subjects can be written in Kazakh, Russian or English. Accepts .xlsx, .xls, .csv.',
+      excelRows: 'Found in file', excelReady: 'Ready to import', excelAppend: 'Add to the list (update teachers with the same name)',
+      excelReplace: 'Replace the whole list', excelImport: 'Import', excelUnknown: 'Unknown subject',
+      excelNoSubj: 'no subjects recognised — skipped', excelNew: 'new', excelUpdate: 'will update', excelUpdated: 'updated',
+      excelDone: 'Imported', excelEmpty: 'No teachers found in the file',
+      excelLibErr: 'Could not load the Excel library (internet needed). Save the file as CSV and try again.',
+      confirmReplace: 'The current teacher list, workload and timetables will be deleted. Continue?',
+      colSubjects: 'Subjects', teachersSheet: 'Teachers', subjectsSheet: 'Subject list',
+      model: 'Model', save: 'Save', close: 'Close', error: 'Error'
+    }
+  };
+
+  let lang = 'kk';
+  try { lang = localStorage.getItem('sss_lang') || 'kk'; } catch (e) { /* бос */ }
+
+  const I18N = {
+    get lang() { return lang; },
+    setLang(l) { lang = l; try { localStorage.setItem('sss_lang', l); } catch (e) { /* бос */ } },
+    t(key) { return (STR[lang] && STR[lang][key]) || STR.kk[key] || key; },
+    apply(root) {
+      (root || document).querySelectorAll('[data-i18n]').forEach(el => { el.textContent = I18N.t(el.dataset.i18n); });
+      (root || document).querySelectorAll('[data-i18n-title]').forEach(el => { el.title = I18N.t(el.dataset.i18nTitle); });
+      document.documentElement.lang = lang === 'en' ? 'en' : 'kk';
+    }
+  };
+  g.I18N = I18N;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+  <script>
+/* =========================================================
+   data.js — Пәндер, үлгілік оқу жоспары (5–11 сынып),
+   СанПиН / мемлекеттік стандарт ережелері, оқу жылы күндері
+   ========================================================= */
+(function (g) {
+  'use strict';
+
+  // diff — Сивков шкаласына жуық қиындық балы (СанПиН бойынша
+  // қиын пәндер 2–4 сабаққа, сейсенбі/сәрсенбіге қойылады)
+  // splittable — 24+ оқушы болса топқа бөлінетін пәндер
+  // double — қатар (жұп) сабақ ретінде қоюға рұқсат
+  const SUBJECTS = {
+    kaz_lang:    { kk: 'Қазақ тілі',               en: 'Kazakh language',            diff: 9,  color: '#3b82f6' },
+    kaz_lit:     { kk: 'Қазақ әдебиеті',           en: 'Kazakh literature',          diff: 6,  color: '#60a5fa' },
+    rus:         { kk: 'Орыс тілі мен әдебиеті',   en: 'Russian lang. & literature', diff: 8,  color: '#8b5cf6' },
+    eng:         { kk: 'Ағылшын тілі',             en: 'English',                    diff: 10, color: '#ec4899', splittable: true },
+    math:        { kk: 'Математика',               en: 'Mathematics',                diff: 10, color: '#ef4444' },
+    algebra:     { kk: 'Алгебра',                  en: 'Algebra',                    diff: 10, color: '#dc2626' },
+    geometry:    { kk: 'Геометрия',                en: 'Geometry',                   diff: 12, color: '#b91c1c' },
+    informatics: { kk: 'Информатика',              en: 'Computer science',           diff: 10, color: '#0ea5e9', splittable: true },
+    science:     { kk: 'Жаратылыстану',            en: 'Natural science',            diff: 7,  color: '#22c55e' },
+    physics:     { kk: 'Физика',                   en: 'Physics',                    diff: 12, color: '#f97316' },
+    chemistry:   { kk: 'Химия',                    en: 'Chemistry',                  diff: 11, color: '#eab308' },
+    biology:     { kk: 'Биология',                 en: 'Biology',                    diff: 8,  color: '#16a34a' },
+    geography:   { kk: 'География',                en: 'Geography',                  diff: 6,  color: '#14b8a6' },
+    hist_kz:     { kk: 'Қазақстан тарихы',         en: 'History of Kazakhstan',      diff: 6,  color: '#a16207' },
+    hist_world:  { kk: 'Дүниежүзі тарихы',         en: 'World history',              diff: 5,  color: '#ca8a04' },
+    law:         { kk: 'Құқық негіздері',          en: 'Fundamentals of law',        diff: 5,  color: '#78716c' },
+    music:       { kk: 'Музыка',                   en: 'Music',                      diff: 2,  color: '#d946ef' },
+    art:         { kk: 'Көркем еңбек',             en: 'Arts & crafts',              diff: 3,  color: '#f472b6', double: true },
+    pe:          { kk: 'Дене шынықтыру',           en: 'Physical education',         diff: 3,  color: '#10b981' },
+    nvtp:        { kk: 'Алғашқы әскери және технологиялық дайындық', en: 'Basic military & technological training', diff: 4, color: '#64748b' }
+  };
+
+  // Бір мұғалім әдетте қатар беретін пәндер (тағайындауда ескеріледі)
+  const FAMILY = {
+    math: ['algebra', 'geometry'], algebra: ['math', 'geometry'], geometry: ['math', 'algebra'],
+    kaz_lang: ['kaz_lit'], kaz_lit: ['kaz_lang'],
+    hist_kz: ['hist_world', 'law'], hist_world: ['hist_kz', 'law'], law: ['hist_kz', 'hist_world']
+  };
+
+  // Үлгілік оқу жоспары (қазақ тілінде оқытатын мектеп, апталық сағат).
+  // Мән бүтін сан немесе тоқсан бойынша [I, II, III, IV] массив болуы мүмкін.
+  // ЕСКЕРТУ: ағымдағы ҚР Оқу-ағарту министрлігінің бұйрығымен салыстырып,
+  // «Оқу жоспары» бетінде түзетіңіз.
+  const CURRICULUM = {
+    5:  { kaz_lang: 3, kaz_lit: 2, rus: 2, eng: 3, math: 5, informatics: 1, science: 2, hist_kz: 1, hist_world: 1, music: 1, art: 2, pe: 3 },
+    6:  { kaz_lang: 3, kaz_lit: 2, rus: 2, eng: 3, math: 5, informatics: 1, science: 2, hist_kz: 1, hist_world: 1, music: 1, art: 2, pe: 3 },
+    7:  { kaz_lang: 2, kaz_lit: 2, rus: 2, eng: 3, algebra: 3, geometry: 2, informatics: 1, physics: 2, chemistry: 1, biology: 2, geography: 2, hist_kz: 2, hist_world: 1, music: 1, art: 1, pe: 3 },
+    8:  { kaz_lang: 2, kaz_lit: 2, rus: 2, eng: 3, algebra: 3, geometry: 2, informatics: 1, physics: 2, chemistry: 2, biology: 2, geography: 2, hist_kz: 2, hist_world: 1, art: 1, pe: 3 },
+    9:  { kaz_lang: 2, kaz_lit: 2, rus: 2, eng: 3, algebra: 3, geometry: 2, informatics: 1, physics: 2, chemistry: 2, biology: 2, geography: 2, hist_kz: 2, hist_world: 1, law: 1, pe: 3 },
+    10: { kaz_lang: 1, kaz_lit: 3, rus: 2, eng: 2, algebra: 3, geometry: 2, informatics: 2, physics: 3, chemistry: 2, biology: 2, geography: 2, hist_kz: 2, hist_world: 1, nvtp: 2, pe: 2 },
+    11: { kaz_lang: 1, kaz_lit: 3, rus: 2, eng: 2, algebra: 3, geometry: 2, informatics: 2, physics: 3, chemistry: 2, biology: 2, geography: 2, hist_kz: 2, hist_world: 1, nvtp: 2, pe: 2 }
+  };
+
+  // СанПиН бойынша апталық ең жоғары жүктеме (5 күндік апта) және күнделікті сабақ саны
+  const RULES = {
+    maxWeekly: { 5: 29, 6: 30, 7: 32, 8: 33, 9: 33, 10: 34, 11: 34 },
+    maxPerDay: { 5: 6, 6: 6, 7: 7, 8: 7, 9: 7, 10: 7, 11: 7 },
+    teacherRate: 16,       // 1 ставка = 16 сағат
+    teacherMaxDefault: 24  // ұсынылатын ең жоғары жүктеме
+  };
+
+  // 2026–2027 оқу жылы (ҚР Оқу-ағарту министрлігі бекіткен мерзімдер)
+  const QUARTERS = [
+    { start: '2026-09-01', end: '2026-10-25' },
+    { start: '2026-11-02', end: '2026-12-27' },
+    { start: '2027-01-11', end: '2027-03-21' },
+    { start: '2027-03-29', end: '2027-05-25' }
+  ];
+
+  // Оқу күндеріне түсетін мерекелер (қажет болса түзетіңіз)
+  const HOLIDAYS = [
+    '2026-12-16', // Тәуелсіздік күні
+    '2027-03-08', // Халықаралық әйелдер күні
+    '2027-05-07', // Отан қорғаушылар күні
+    '2027-05-10'  // Жеңіс күні (9 мамыр демалысынан ауыстырылған)
+  ];
+
+  const DAYS = {
+    kk: ['Дүйсенбі', 'Сейсенбі', 'Сәрсенбі', 'Бейсенбі', 'Жұма', 'Сенбі'],
+    en: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+  };
+
+  const BELLS = ['08:00–08:45', '08:55–09:40', '10:00–10:45', '10:55–11:40', '11:50–12:35', '12:45–13:30', '13:40–14:25', '14:35–15:20'];
+
+  const CLASS_LETTERS = ['А', 'Ә', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж'];
+
+  // Сынап көру үшін демо мұғалімдер (әр параллельде 2 сынып)
+  const DEMO_TEACHERS = [
+    ['Асанова Г.', ['kaz_lang', 'kaz_lit']], ['Бекова А.', ['kaz_lang', 'kaz_lit']], ['Жұмабаева С.', ['kaz_lang', 'kaz_lit']],
+    ['Иванова Е.', ['rus']], ['Петрова Н.', ['rus']],
+    ['Сейтқали Д.', ['eng']], ['Нұрланова А.', ['eng']], ['Оспанова М.', ['eng']], ['Smith J.', ['eng']],
+    ['Тоқтаров Б.', ['math', 'algebra', 'geometry']], ['Қасымова Р.', ['math', 'algebra', 'geometry']],
+    ['Әлиев Т.', ['algebra', 'geometry']], ['Мұқанова Ж.', ['math', 'algebra', 'geometry']],
+    ['Ержанов Қ.', ['informatics']], ['Серікова Л.', ['informatics', 'math']],
+    ['Омаров Н.', ['physics']], ['Ахметова Ш.', ['chemistry', 'biology']],
+    ['Сұлтанова Б.', ['biology', 'science']], ['Қайратова Ә.', ['geography', 'science']],
+    ['Төлегенов С.', ['hist_kz', 'hist_world', 'law']], ['Әбілова Г.', ['hist_kz', 'hist_world']],
+    ['Мусин Е.', ['music']], ['Байжанова К.', ['art']],
+    ['Қуанышев А.', ['pe']], ['Ибраев М.', ['pe']], ['Жақсылықов Р.', ['nvtp', 'pe']]
+  ].map(([name, subjects], i) => ({ id: 'demo' + i, name, subjects, maxHours: 24, offDay: -1 }));
+
+  function hoursFor(value, quarter) {
+    if (Array.isArray(value)) return Number(value[quarter] || 0);
+    return Number(value || 0);
+  }
+  function avgHours(value) {
+    if (Array.isArray(value)) return value.reduce((a, b) => a + Number(b || 0), 0) / value.length;
+    return Number(value || 0);
+  }
+  function qualifies(teacher, subj) {
+    if (teacher.subjects.includes(subj)) return true;
+    return (FAMILY[subj] || []).some(s => teacher.subjects.includes(s));
+  }
+
+  g.SchoolData = { SUBJECTS, FAMILY, CURRICULUM, RULES, QUARTERS, HOLIDAYS, DAYS, BELLS, CLASS_LETTERS, DEMO_TEACHERS, hoursFor, avgHours, qualifies };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+  <script>
+/* =========================================================
+   assign.js — Мұғалімдерді сыныптарға автоматты тағайындау
+   Жүктемені тең бөледі, бір сыныптағы туыс пәндерді
+   (алгебра+геометрия, қазақ тілі+әдебиеті) бір мұғалімге береді.
+   ========================================================= */
+(function (g) {
+  'use strict';
+  const D = g.SchoolData;
+
+  /**
+   * @param {Array} classes  [{id:'5А', grade:5, split:true}]
+   * @param {Object} plan    {grade: {subj: hours|[h1..h4]}}
+   * @param {Array} teachers [{id, name, subjects:[], maxHours}]
+   * @returns {{assignments:Object, load:Object, unassigned:Array, overloaded:Array}}
+   *   assignments[classId][subj] = [teacherId] (бөлінген топта 2 мұғалім)
+   */
+  function assignTeachers(classes, plan, teachers) {
+    const load = {};
+    teachers.forEach(t => { load[t.id] = 0; });
+    const assignments = {};
+    const tasks = [];
+
+    classes.forEach(c => {
+      assignments[c.id] = {};
+      const subjects = plan[c.grade] || {};
+      Object.keys(subjects).forEach(subj => {
+        const hours = D.avgHours(subjects[subj]);
+        if (hours <= 0) return;
+        const groups = (c.split && D.SUBJECTS[subj] && D.SUBJECTS[subj].splittable) ? 2 : 1;
+        assignments[c.id][subj] = [];
+        for (let gi = 0; gi < groups; gi++) tasks.push({ cid: c.id, subj, hours, group: gi });
+      });
+    });
+
+    const qualifiedCount = subj => teachers.filter(t => D.qualifies(t, subj)).length;
+    // Сирек мамандықтағы пәндер мен көп сағатты пәндер алдымен
+    tasks.sort((a, b) => (qualifiedCount(a.subj) - qualifiedCount(b.subj)) || (b.hours - a.hours));
+
+    const unassigned = [];
+    tasks.forEach(task => {
+      const taken = assignments[task.cid][task.subj];
+      const candidates = teachers.filter(t => D.qualifies(t, task.subj) && !taken.includes(t.id));
+      if (!candidates.length) { unassigned.push(task); return; }
+
+      let best = null, bestScore = Infinity;
+      candidates.forEach(t => {
+        const max = Number(t.maxHours) || D.RULES.teacherMaxDefault;
+        const after = load[t.id] + task.hours;
+        let score = after / max;
+        if (after > max) score += 10 + (after - max);                 // асып кету — қатаң айыппұл
+        if (t.subjects.includes(task.subj)) score -= 0.15;             // тікелей мамандығы
+        const cls = assignments[task.cid];
+        const family = D.FAMILY[task.subj] || [];
+        if (family.some(f => (cls[f] || []).includes(t.id))) score -= 0.6; // туыс пән осы сыныпта
+        if (Object.values(cls).some(arr => arr.includes(t.id))) score -= 0.1; // осы сыныпты біледі
+        if (score < bestScore) { bestScore = score; best = t; }
+      });
+      taken.push(best.id);
+      load[best.id] += task.hours;
+    });
+
+    const overloaded = teachers
+      .filter(t => load[t.id] > (Number(t.maxHours) || D.RULES.teacherMaxDefault))
+      .map(t => ({ id: t.id, load: load[t.id], max: Number(t.maxHours) || D.RULES.teacherMaxDefault }));
+
+    return { assignments, load, unassigned, overloaded };
+  }
+
+  /** Қолмен өзгертілген тағайындаулар бойынша жүктемені қайта есептеу */
+  function computeLoad(classes, plan, teachers, assignments) {
+    const load = {};
+    teachers.forEach(t => { load[t.id] = 0; });
+    classes.forEach(c => {
+      const subjects = plan[c.grade] || {};
+      Object.keys(subjects).forEach(subj => {
+        const hours = D.avgHours(subjects[subj]);
+        ((assignments[c.id] || {})[subj] || []).forEach(tid => {
+          if (tid in load) load[tid] += hours;
+        });
+      });
+    });
+    return load;
+  }
+
+  g.Assign = { assignTeachers, computeLoad };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+  <script>
+/* =========================================================
+   scheduler.js — Сабақ кестесін құрастыру алгоритмі
+   Әдіс: жинақы бастапқы орналастыру + имитациялық күйдіру
+   (simulated annealing).
+
+   Қатаң шектеулер (СанПиН / стандарт):
+     • мұғалім бір уақытта екі сыныпта бола алмайды
+     • сыныпта «терезе» (бос сабақ) болмайды — құрылымдық түрде
+     • күнделікті сабақ саны шектен аспайды
+     • мұғалімнің әдістемелік күні бос
+     • бір пән күніне 2-ден көп болмайды
+   Жұмсақ шектеулер:
+     • қиын пәндер 2–4 сабақта, 1-ші және соңғы сабақта емес
+     • апта ішіндегі жүктеме: сейсенбі/сәрсенбі ең ауыр, дүйсенбі/жұма жеңіл
+     • бір пән бір күнде қайталанбайды (жұп сабаққа рұқсат етілгендерден басқа)
+     • мұғалімдердің «терезесі» аз болады
+   ========================================================= */
+(function (g) {
+  'use strict';
+
+  const HARD = 1000;
+  const POS_W = [0.35, 0, 0, 0.1, 0.35, 0.6, 0.9, 1.2];
+  const DAY_F = [0.9, 1.08, 1.1, 1.0, 0.85, 0.75];
+
+  function rng(seed) {
+    let a = seed >>> 0;
+    return function () {
+      a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  /**
+   * input = {
+   *   days: 5,
+   *   classes: [{id, maxPerDay}],
+   *   lessons: {classId: [{subj, teachers:[tid], diff, double}]},
+   *   teacherOff: {tid: [dayIndex]},
+   *   seed, iterations
+   * }
+   */
+  function Solver(input) {
+    const D = input.days;
+    const P = Math.max(...input.classes.map(c => c.maxPerDay));
+    const rand = rng(input.seed || 1);
+    const L = [];
+    const tIndex = {};
+    const tIds = [];
+    const C = input.classes.length;
+    const classLessons = [];
+    const maxPD = [];
+
+    input.classes.forEach((c, ci) => {
+      maxPD[ci] = c.maxPerDay;
+      classLessons[ci] = [];
+      (input.lessons[c.id] || []).forEach(l => {
+        const tis = l.teachers.map(tid => {
+          if (!(tid in tIndex)) { tIndex[tid] = tIds.length; tIds.push(tid); }
+          return tIndex[tid];
+        });
+        L.push({ ci, subj: l.subj, tis, diff: l.diff || 5, double: !!l.double });
+        classLessons[ci].push(L.length - 1);
+      });
+      if (classLessons[ci].length > D * c.maxPerDay) {
+        throw new Error('CAPACITY:' + c.id + ':' + classLessons[ci].length + ':' + (D * c.maxPerDay));
+      }
+    });
+
+    const T = tIds.length;
+    const off = tIds.map(tid => new Set((input.teacherOff || {})[tid] || []));
+    const grid = Array.from({ length: C }, () => new Int32Array(D * P).fill(-1));
+    const count = Array.from({ length: C }, () => new Int8Array(D));
+    const tcount = new Int16Array(Math.max(1, T * D * P));
+    const avgDaily = [];
+
+    // --- Бастапқы жинақы орналастыру ---
+    const extraOrder = [2, 1, 3, 0, 4, 5].filter(d => d < D);
+    for (let ci = 0; ci < C; ci++) {
+      const n = classLessons[ci].length;
+      const base = Math.floor(n / D);
+      let rem = n % D;
+      for (let d = 0; d < D; d++) count[ci][d] = base;
+      for (const d of extraOrder) { if (rem <= 0) break; count[ci][d]++; rem--; }
+
+      const bySubj = {};
+      classLessons[ci].forEach(li => { (bySubj[L[li].subj] = bySubj[L[li].subj] || []).push(li); });
+      const ordered = Object.values(bySubj).sort((a, b) => b.length - a.length).flat();
+      const dayLists = Array.from({ length: D }, () => []);
+      let ptr = 0;
+      ordered.forEach(li => {
+        for (let k = 0; k < D; k++) {
+          const d = (ptr + k) % D;
+          if (dayLists[d].length < count[ci][d]) { dayLists[d].push(li); ptr = d + 1; return; }
+        }
+      });
+      let sum = 0;
+      dayLists.forEach((list, d) => list.forEach((li, p) => { grid[ci][d * P + p] = li; sum += L[li].diff; }));
+      avgDaily[ci] = sum / D;
+    }
+    for (let ci = 0; ci < C; ci++) for (let s = 0; s < D * P; s++) {
+      const li = grid[ci][s]; if (li < 0) continue;
+      L[li].tis.forEach(ti => { tcount[ti * D * P + s]++; });
+    }
+
+    // --- Құн функциялары ---
+    function classDayCost(ci, d) {
+      let cost = 0, dsum = 0;
+      const n = count[ci][d];
+      const pos = {};
+      for (let p = 0; p < n; p++) {
+        const l = L[grid[ci][d * P + p]];
+        dsum += l.diff;
+        cost += l.diff * (POS_W[p] || 1.5);
+        if (l.subj === 'pe' && p === 0) cost += 1;
+        (pos[l.subj] = pos[l.subj] || []).push(p);
+      }
+      for (const subj in pos) {
+        const arr = pos[subj];
+        if (arr.length === 2) {
+          const l = L[grid[ci][d * P + arr[0]]];
+          const consecutive = arr[1] - arr[0] === 1;
+          cost += (l.double && consecutive) ? 2 : (consecutive ? 25 : 40);
+        } else if (arr.length > 2) {
+          cost += HARD * (arr.length - 2) + 40;
+        }
+      }
+      cost += Math.abs(dsum - avgDaily[ci] * (DAY_F[d] || 1)) * 0.15;
+      return cost;
+    }
+
+    function teacherDayCost(ti, d) {
+      let cost = 0, first = -1, last = -1, busy = 0;
+      const base = (ti * D + d) * P;
+      for (let p = 0; p < P; p++) {
+        const c = tcount[base + p];
+        if (c > 0) { busy++; if (first < 0) first = p; last = p; }
+        if (c > 1) cost += HARD * (c - 1);
+      }
+      if (busy) {
+        cost += 1.5 * ((last - first + 1) - busy);
+        if (off[ti].has(d)) cost += HARD * busy;
+      }
+      return cost;
+    }
+
+    function totalCost() {
+      let s = 0;
+      for (let ci = 0; ci < C; ci++) for (let d = 0; d < D; d++) s += classDayCost(ci, d);
+      for (let ti = 0; ti < T; ti++) for (let d = 0; d < D; d++) s += teacherDayCost(ti, d);
+      return s;
+    }
+
+    function setCell(ci, slot, li) {
+      const old = grid[ci][slot];
+      if (old >= 0) L[old].tis.forEach(ti => { tcount[ti * D * P + slot]--; });
+      grid[ci][slot] = li;
+      if (li >= 0) L[li].tis.forEach(ti => { tcount[ti * D * P + slot]++; });
+    }
+
+    function localCost(ci, days, tis) {
+      let s = 0;
+      for (const d of days) s += classDayCost(ci, d);
+      for (const ti of tis) for (const d of days) s += teacherDayCost(ti, d);
+      return s;
+    }
+
+    function conflictCells() {
+      const out = [];
+      for (let ci = 0; ci < C; ci++) for (let d = 0; d < D; d++) for (let p = 0; p < count[ci][d]; p++) {
+        const slot = d * P + p;
+        const l = L[grid[ci][slot]];
+        if (l.tis.some(ti => tcount[ti * D * P + slot] > 1 || off[ti].has(d))) out.push([ci, d, p]);
+      }
+      return out;
+    }
+
+    let cost = totalCost();
+    let best = cost;
+    let bestGrid = grid.map(a => a.slice());
+    let bestCount = count.map(a => a.slice());
+    const iterations = input.iterations || Math.min(400000, 60000 + 10000 * C);
+    const T0 = 40, T1 = 0.05;
+    let it = 0;
+    let hot = [];
+
+    function step() {
+      if (it % 2000 === 0) hot = conflictCells();
+      const temp = T0 * Math.pow(T1 / T0, it / iterations);
+      let ci, d1, p1;
+      if (hot.length && rand() < 0.6) {
+        [ci, d1, p1] = hot[Math.floor(rand() * hot.length)];
+        if (p1 >= count[ci][d1]) { it++; return; }
+      } else {
+        ci = Math.floor(rand() * C);
+        d1 = Math.floor(rand() * D);
+        if (!count[ci][d1]) { it++; return; }
+        p1 = Math.floor(rand() * count[ci][d1]);
+      }
+
+      if (rand() < 0.85) {
+        // 1-қадам: сынып ішінде екі сабақтың орнын ауыстыру
+        const d2 = Math.floor(rand() * D);
+        if (!count[ci][d2]) { it++; return; }
+        const p2 = Math.floor(rand() * count[ci][d2]);
+        const s1 = d1 * P + p1, s2 = d2 * P + p2;
+        const a = grid[ci][s1], b = grid[ci][s2];
+        if (s1 === s2 || L[a].subj === L[b].subj) { it++; return; }
+        const days = d1 === d2 ? [d1] : [d1, d2];
+        const tis = [...new Set([...L[a].tis, ...L[b].tis])];
+        const before = localCost(ci, days, tis);
+        setCell(ci, s1, b); setCell(ci, s2, a);
+        const delta = localCost(ci, days, tis) - before;
+        if (delta <= 0 || rand() < Math.exp(-delta / temp)) cost += delta;
+        else { setCell(ci, s1, a); setCell(ci, s2, b); }
+      } else {
+        // 2-қадам: күннің соңғы сабағын басқа күннің соңына көшіру (терезесіз)
+        const d2 = Math.floor(rand() * D);
+        if (d2 === d1 || count[ci][d1] <= 1 || count[ci][d2] >= maxPD[ci]) { it++; return; }
+        const from = d1 * P + count[ci][d1] - 1;
+        const to = d2 * P + count[ci][d2];
+        const li = grid[ci][from];
+        const tis = L[li].tis;
+        const before = localCost(ci, [d1, d2], tis);
+        setCell(ci, from, -1); count[ci][d1]--;
+        setCell(ci, to, li); count[ci][d2]++;
+        const delta = localCost(ci, [d1, d2], tis) - before;
+        if (delta <= 0 || rand() < Math.exp(-delta / temp)) cost += delta;
+        else {
+          setCell(ci, to, -1); count[ci][d2]--;
+          setCell(ci, from, li); count[ci][d1]++;
+        }
+      }
+      if (cost < best - 1e-9) {
+        best = cost;
+        bestGrid = grid.map(a => a.slice());
+        bestCount = count.map(a => a.slice());
+      }
+      it++;
+    }
+
+    this.run = async function (onProgress) {
+      const CHUNK = 5000;
+      while (it < iterations) {
+        const end = Math.min(iterations, it + CHUNK);
+        while (it < end) step();
+        if (onProgress) onProgress(it / iterations, best);
+        await new Promise(r => setTimeout(r, 0));
+      }
+      // Ең жақсы шешімді қалпына келтіру
+      for (let ci = 0; ci < C; ci++) {
+        for (let s = 0; s < D * P; s++) setCell(ci, s, bestGrid[ci][s]);
+        count[ci].set(bestCount[ci]);
+      }
+      return this.result();
+    };
+
+    this.result = function () {
+      const out = {};
+      const violations = [];
+      input.classes.forEach((c, ci) => {
+        out[c.id] = [];
+        for (let d = 0; d < D; d++) {
+          const row = [];
+          for (let p = 0; p < P; p++) {
+            const li = grid[ci][d * P + p];
+            if (li < 0) { row.push(null); continue; }
+            const l = L[li];
+            const tids = l.tis.map(ti => tIds[ti]);
+            const conflict = l.tis.some(ti => tcount[ti * D * P + d * P + p] > 1);
+            const offDay = l.tis.some(ti => off[ti].has(d));
+            row.push({ subj: l.subj, teachers: tids, conflict, offDay });
+            if (conflict) violations.push({ type: 'teacher', classId: c.id, day: d, period: p, subj: l.subj, teachers: tids });
+            if (offDay) violations.push({ type: 'offday', classId: c.id, day: d, period: p, subj: l.subj, teachers: tids });
+          }
+          const seen = {};
+          row.forEach(x => { if (x) seen[x.subj] = (seen[x.subj] || 0) + 1; });
+          Object.keys(seen).forEach(s => { if (seen[s] > 2) violations.push({ type: 'triple', classId: c.id, day: d, subj: s }); });
+          out[c.id].push(row);
+        }
+      });
+      return { grid: out, cost: Math.round(best), violations, days: D, periods: P, iterations };
+    };
+  }
+
+  /** Сабақтардың тізімін құру (бір тоқсанға) */
+  function buildLessons(classes, plan, assignments, quarter) {
+    const SD = g.SchoolData;
+    const lessons = {};
+    const missing = [];
+    classes.forEach(c => {
+      lessons[c.id] = [];
+      const subjects = plan[c.grade] || {};
+      Object.keys(subjects).forEach(subj => {
+        const h = Math.round(SD.hoursFor(subjects[subj], quarter));
+        if (h <= 0) return;
+        const tids = ((assignments[c.id] || {})[subj] || []).filter(Boolean);
+        if (!tids.length) { missing.push({ classId: c.id, subj }); return; }
+        const meta = SD.SUBJECTS[subj] || {};
+        for (let i = 0; i < h; i++) lessons[c.id].push({ subj, teachers: tids, diff: meta.diff || 5, double: !!meta.double });
+      });
+    });
+    return { lessons, missing };
+  }
+
+  /** Кестені қолмен өзгерткеннен кейін қайшылықтарды қайта тексеру */
+  function validate(grid, teacherOff) {
+    const busy = {};
+    const violations = [];
+    Object.keys(grid).forEach(cid => grid[cid].forEach((row, d) => row.forEach((x, p) => {
+      if (!x) return;
+      x.teachers.forEach(t => { const k = t + '|' + d + '|' + p; busy[k] = (busy[k] || 0) + 1; });
+    })));
+    Object.keys(grid).forEach(cid => grid[cid].forEach((row, d) => {
+      const seen = {};
+      row.forEach((x, p) => {
+        if (!x) return;
+        x.conflict = x.teachers.some(t => busy[t + '|' + d + '|' + p] > 1);
+        x.offDay = x.teachers.some(t => ((teacherOff || {})[t] || []).includes(d));
+        if (x.conflict) violations.push({ type: 'teacher', classId: cid, day: d, period: p, subj: x.subj, teachers: x.teachers });
+        if (x.offDay) violations.push({ type: 'offday', classId: cid, day: d, period: p, subj: x.subj, teachers: x.teachers });
+        seen[x.subj] = (seen[x.subj] || 0) + 1;
+      });
+      Object.keys(seen).forEach(s => { if (seen[s] > 2) violations.push({ type: 'triple', classId: cid, day: d, subj: s }); });
+      // терезе тексеру
+      let gap = false, endSeen = false;
+      row.forEach(x => { if (!x) endSeen = true; else if (endSeen) gap = true; });
+      if (gap) violations.push({ type: 'gap', classId: cid, day: d });
+    }));
+    return violations;
+  }
+
+  async function generate(input, onProgress) {
+    const solver = new Solver(input);
+    return solver.run(onProgress);
+  }
+
+  g.Scheduler = { generate, buildLessons, validate };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+  <script>
+/* =========================================================
+   ai.js — Жасанды интеллект интеграциясы (Google Gemini / Claude API)
+   • Кестені СанПиН бойынша талдау
+   • ҚТЖ (күнтізбелік-тақырыптық жоспар) тақырыптарын толтыру
+   • ОМЖ (орта мерзімді жоспар) құру
+   • Чат-көмекші
+   API кілті тек браузердің localStorage-інде сақталады.
+   ========================================================= */
+(function (g) {
+  'use strict';
+
+  const API_URL = 'https://api.anthropic.com/v1/messages';
+  const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/';
+  const DEFAULTS = { gemini: 'gemini-3.8-flash', claude: 'claude-sonnet-5-5' };
+  const DEFAULT_MODEL = DEFAULTS.gemini;
+  const aiStoreKey = () => 'sss_ai' + (g.Auth ? ':' + g.Auth.dataId() : '');
+
+  // Баптаулар: { provider, keys:{gemini,claude}, models:{gemini,claude} }
+  function raw() {
+    let s = {};
+    try { s = JSON.parse(localStorage.getItem(aiStoreKey()) || '{}'); } catch (e) { /* бос */ }
+    if (!s.keys) { // ескі нұсқадан көшіру
+      s = { provider: s.apiKey ? 'claude' : 'gemini', keys: { claude: s.apiKey || '', gemini: '' },
+            models: { claude: s.model || DEFAULTS.claude, gemini: DEFAULTS.gemini } };
+    }
+    s.models = Object.assign({}, DEFAULTS, s.models || {});
+    s.provider = s.provider || 'gemini';
+    return s;
+  }
+  function settings() {
+    const s = raw();
+    return { provider: s.provider, apiKey: s.keys[s.provider] || '', model: s.models[s.provider] || DEFAULTS[s.provider], all: s };
+  }
+  function saveSettings(s) {
+    try { localStorage.setItem(aiStoreKey(), JSON.stringify(s)); } catch (e) { /* бос */ }
+  }
+
+  async function errorText(res) {
+    let msg = res.status + ' ' + res.statusText;
+    try { const j = await res.json(); if (j.error) msg += ': ' + (j.error.message || JSON.stringify(j.error)); } catch (e) { /* бос */ }
+    if (res.status === 429) msg += ' — тегін лимит таусылды, біраз күтіп қайталаңыз / free quota reached, try again later';
+    return msg;
+  }
+
+  async function callClaude(messages, system, maxTokens, apiKey, model) {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({ model, max_tokens: maxTokens || 4000, system, messages })
+    });
+    if (!res.ok) throw new Error(await errorText(res));
+    const data = await res.json();
+    return (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n');
+  }
+
+  async function callGemini(messages, system, maxTokens, apiKey, model) {
+    const body = {
+      systemInstruction: { parts: [{ text: system }] },
+      contents: messages.map(m => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })),
+      generationConfig: { maxOutputTokens: Math.max(8192, (maxTokens || 4000) * 2) }
+    };
+    const res = await fetch(GEMINI_URL + encodeURIComponent(model) + ':generateContent', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-goog-api-key': apiKey },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error(await errorText(res));
+    const data = await res.json();
+    const cand = (data.candidates || [])[0];
+    if (!cand) throw new Error('Gemini: ' + ((data.promptFeedback || {}).blockReason || 'бос жауап / empty response'));
+    return ((cand.content || {}).parts || []).filter(p => p.text && !p.thought).map(p => p.text).join('\n');
+  }
+
+  async function call(messages, system, maxTokens) {
+    const { provider, apiKey, model } = settings();
+    if (!apiKey) throw new Error('NO_KEY');
+    return provider === 'claude'
+      ? callClaude(messages, system, maxTokens, apiKey, model)
+      : callGemini(messages, system, maxTokens, apiKey, model);
+  }
+
+  function extractJSON(text) {
+    const start = text.search(/[[{]/);
+    if (start < 0) throw new Error('AI JSON қайтармады / AI returned no JSON');
+    const open = text[start], close = open === '[' ? ']' : '}';
+    const end = text.lastIndexOf(close);
+    return JSON.parse(text.slice(start, end + 1));
+  }
+
+  const langName = lang => (lang === 'en' ? 'English' : 'Kazakh (қазақ тілі)');
+
+  const SYSTEM_METHODIST =
+    'You are an experienced methodologist of secondary schools of the Republic of Kazakhstan. ' +
+    'You know the updated content of education (жаңартылған білім мазмұны), the State compulsory standard of education (МЖМБС), ' +
+    'model curricula and programs (үлгілік оқу жоспары, үлгілік оқу бағдарламасы), and the formats of ҚТЖ ' +
+    '(күнтізбелік-тақырыптық жоспар) and ОМЖ (орта мерзімді жоспар). Use learning objective codes like 7.1.2.1 where appropriate. ' +
+    'Be accurate and practical.';
+
+  /** ҚТЖ: дәл n сабаққа тақырыптар */
+  async function generateKTP({ subject, grade, quarter, count, lang }) {
+    const prompt =
+      `Create the calendar-thematic plan (ҚТЖ) for "${subject}", grade ${grade}, quarter ${quarter}. ` +
+      `There must be EXACTLY ${count} lessons (one row per lesson, hours = 1). Include the section (бөлім), lesson topic, ` +
+      `learning objectives (with codes if applicable), and mark summative assessment lessons (БЖБ/ТЖБ) where appropriate. ` +
+      `Write all text in ${langName(lang)}. ` +
+      'Return ONLY a JSON array, no commentary: [{"section":"...","topic":"...","objectives":"...","type":"lesson|БЖБ|ТЖБ"}]';
+    const text = await call([{ role: 'user', content: prompt }], SYSTEM_METHODIST, 12000);
+    const arr = extractJSON(text);
+    return Array.isArray(arr) ? arr : [];
+  }
+
+  /** ОМЖ: тоқсанға арналған бөлімдер */
+  async function generateOMJ({ subject, grade, quarter, hours, lang }) {
+    const prompt =
+      `Create the medium-term plan (ОМЖ) for "${subject}", grade ${grade}, quarter ${quarter}, total ${hours} hours. ` +
+      `Split into sections (бөлімдер) with hours per section summing to ${hours}. For each section give: topics, ` +
+      `learning objectives (with codes), expected results, and assessment (formative / БЖБ). Write in ${langName(lang)}. ` +
+      'Return ONLY JSON: [{"section":"...","hours":N,"topics":["..."],"objectives":["..."],"results":"...","assessment":"..."}]';
+    const text = await call([{ role: 'user', content: prompt }], SYSTEM_METHODIST, 8000);
+    const arr = extractJSON(text);
+    return Array.isArray(arr) ? arr : [];
+  }
+
+  /** Кестені талдау */
+  async function analyzeSchedule(summary, lang) {
+    const system =
+      'You are an expert on school timetabling in Kazakhstan: sanitary rules (СанПиН), the difficulty scale of subjects, ' +
+      'teacher workload rules (16 h = 1 rate). Evaluate the timetable and give concrete, prioritized recommendations ' +
+      `(which class, which day, what to swap). Answer in ${langName(lang)}, using short headings and bullet points.`;
+    return call([{ role: 'user', content: summary }], system, 3000);
+  }
+
+  /** Еркін чат (мектеп деректері контекст ретінде беріледі) */
+  async function chat(history, context, lang) {
+    const system =
+      'You are the AI assistant of a school timetable website for Kazakhstan grades 5–11. ' +
+      `Help the deputy director with timetables, teacher workload, ҚТЖ, ОМЖ, СанПиН. Reply in ${langName(lang)} unless asked otherwise.\n\n` +
+      'Current school data:\n' + context;
+    return call(history, system, 3000);
+  }
+
+  g.AI = { settings, saveSettings, generateKTP, generateOMJ, analyzeSchedule, chat, DEFAULT_MODEL, DEFAULTS };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+  <script>
+/* =========================================================
+   app.js — Интерфейс логикасы
+   ========================================================= */
+window.startApp = function () {
+  'use strict';
+  const D = window.SchoolData;
+  const t = k => I18N.t(k);
+  const $ = id => document.getElementById(id);
+  const GRADES = [5, 6, 7, 8, 9, 10, 11];
+
+  // ---------------- КҮЙ (STATE) ----------------
+  function defaultState() {
+    const grades = {};
+    GRADES.forEach(g => { grades[g] = { count: 1, split: false }; });
+    return {
+      grades, days: 5,
+      quarters: JSON.parse(JSON.stringify(D.QUARTERS)),
+      holidays: D.HOLIDAYS.slice(),
+      teachers: [],
+      plan: JSON.parse(JSON.stringify(D.CURRICULUM)),
+      assignments: {},
+      schedules: [null, null, null, null],
+      ktp: {}
+    };
+  }
+  let state = defaultState();
+  try {
+    const saved = JSON.parse(Auth.initialState() || 'null'); // бұлттан / браузерден жүктелген
+    if (saved) state = Object.assign(defaultState(), saved);
+  } catch (e) { /* бос */ }
+
+  function save() {
+    Auth.persist(state); // Firebase-ке (немесе браузерге) сақтау
+  }
+
+  // ---------------- КӨМЕКШІЛЕР ----------------
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const subjName = s => (D.SUBJECTS[s] ? D.SUBJECTS[s][I18N.lang] : s);
+  const dayName = d => D.DAYS[I18N.lang][d];
+  const teacherById = id => state.teachers.find(x => x.id === id);
+  const tName = id => { const x = teacherById(id); return x ? x.name : '?'; };
+  const uid = () => 't' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+
+  function toast(msg, isError) {
+    const el = $('toast');
+    el.textContent = msg;
+    el.className = 'toast show' + (isError ? ' error' : '');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => { el.className = 'toast'; }, 3500);
+  }
+
+  function classes() {
+    const out = [];
+    GRADES.forEach(g => {
+      const cfg = state.grades[g] || { count: 0 };
+      for (let i = 0; i < (Number(cfg.count) || 0); i++) {
+        out.push({ id: g + D.CLASS_LETTERS[i], grade: g, split: !!cfg.split });
+      }
+    });
+    return out;
+  }
+
+  function parseDate(s) { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); }
+  function iso(dt) { return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0'); }
+  function fmt(dt) { return String(dt.getDate()).padStart(2, '0') + '.' + String(dt.getMonth() + 1).padStart(2, '0') + '.' + dt.getFullYear(); }
+  const weekday = dt => (dt.getDay() + 6) % 7; // Дүйсенбі = 0
+
+  function schoolDates(q) {
+    const qq = state.quarters[q];
+    if (!qq || !qq.start || !qq.end) return [];
+    const hol = new Set(state.holidays);
+    const out = [];
+    for (let dt = parseDate(qq.start); dt <= parseDate(qq.end); dt.setDate(dt.getDate() + 1)) {
+      if (weekday(dt) < state.days && !hol.has(iso(dt))) out.push(new Date(dt));
+    }
+    return out;
+  }
+  const weeksIn = q => Math.round(schoolDates(q).length / state.days);
+
+  function teacherOffMap() {
+    const m = {};
+    state.teachers.forEach(x => { if (x.offDay >= 0) m[x.id] = [Number(x.offDay)]; });
+    return m;
+  }
+
+  function planSubjects() {
+    const set = [];
+    Object.keys(D.SUBJECTS).forEach(s => {
+      if (GRADES.some(g => state.plan[g] && state.plan[g][s] !== undefined)) set.push(s);
+    });
+    return set;
+  }
+
+  // ---------------- ТАБТАР ----------------
+  document.querySelectorAll('#tabs button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('active', b === btn));
+      document.querySelectorAll('.tab').forEach(s => s.classList.toggle('active', s.id === 'tab-' + btn.dataset.tab));
+      renderTab(btn.dataset.tab);
+    });
+  });
+  const activeTab = () => (document.querySelector('#tabs button.active') || {}).dataset.tab;
+
+  function renderTab(tab) {
+    ({ school: renderSchool, teachers: renderTeachers, plan: renderPlan, load: renderLoad,
+       schedule: renderSchedule, ktp: renderKtpControls, ai: renderAiControls, users: () => Auth.renderUsers() }[tab] || (() => {}))();
+  }
+
+  // ---------------- ТІЛ ----------------
+  document.querySelectorAll('.lang-switch button').forEach(b => {
+    b.addEventListener('click', () => { I18N.setLang(b.dataset.lang); applyLang(); });
+  });
+  function applyLang() {
+    I18N.apply();
+    document.querySelectorAll('.lang-switch button').forEach(b => b.classList.toggle('active', b.dataset.lang === I18N.lang));
+    $('chatInput').placeholder = t('chatPlaceholder');
+    renderTab(activeTab());
+    renderTeacherForm();
+    Auth.onLang();
+  }
+
+  // ================= 1. МЕКТЕП =================
+  function renderSchool() {
+    let h = `<tr><th>${t('grade')}</th><th>${t('classCount')}</th><th>${t('splitGroups')}</th></tr>`;
+    GRADES.forEach(g => {
+      const c = state.grades[g];
+      h += `<tr><td><b>${g}</b></td>
+        <td><input type="number" min="0" max="8" value="${c.count}" data-grade="${g}" class="g-count num"></td>
+        <td><input type="checkbox" ${c.split ? 'checked' : ''} data-grade="${g}" class="g-split"></td></tr>`;
+    });
+    $('gradeTable').innerHTML = h;
+    $('gradeTable').querySelectorAll('.g-count').forEach(el => el.addEventListener('change', () => {
+      state.grades[el.dataset.grade].count = Math.max(0, Math.min(8, Number(el.value) || 0)); save();
+    }));
+    $('gradeTable').querySelectorAll('.g-split').forEach(el => el.addEventListener('change', () => {
+      state.grades[el.dataset.grade].split = el.checked; save();
+    }));
+    $('daysPerWeek').value = String(state.days);
+
+    let q = `<tr><th>${t('quarter')}</th><th>${t('start')}</th><th>${t('end')}</th><th>${t('schoolDays')}</th><th>${t('weeks')}</th></tr>`;
+    state.quarters.forEach((qq, i) => {
+      q += `<tr><td><b>${['I', 'II', 'III', 'IV'][i]}</b></td>
+        <td><input type="date" value="${qq.start}" data-q="${i}" data-k="start" class="q-date"></td>
+        <td><input type="date" value="${qq.end}" data-q="${i}" data-k="end" class="q-date"></td>
+        <td>${schoolDates(i).length}</td><td><b>${weeksIn(i)}</b></td></tr>`;
+    });
+    $('quarterTable').innerHTML = q;
+    $('quarterTable').querySelectorAll('.q-date').forEach(el => el.addEventListener('change', () => {
+      state.quarters[el.dataset.q][el.dataset.k] = el.value; save(); renderSchool();
+    }));
+    $('holidays').value = state.holidays.join('\n');
+  }
+  $('daysPerWeek').addEventListener('change', e => { state.days = Number(e.target.value); state.schedules = [null, null, null, null]; save(); renderSchool(); renderTeacherForm(); });
+  $('holidays').addEventListener('change', e => {
+    state.holidays = e.target.value.split(/\s+/).map(s => s.trim()).filter(s => /^\d{4}-\d{2}-\d{2}$/.test(s));
+    save(); renderSchool();
+  });
+
+  $('btnDemo').addEventListener('click', () => {
+    GRADES.forEach(g => { state.grades[g] = { count: 2, split: g >= 7 }; });
+    state.teachers = JSON.parse(JSON.stringify(D.DEMO_TEACHERS));
+    state.assignments = {}; state.schedules = [null, null, null, null];
+    save(); renderSchool(); toast(t('demoLoaded'));
+  });
+  $('btnExport').addEventListener('click', () => {
+    download('school-schedule.json', JSON.stringify(state, null, 2), 'application/json');
+  });
+  $('fileImport').addEventListener('change', e => {
+    const f = e.target.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      try { state = Object.assign(defaultState(), JSON.parse(r.result)); save(); renderSchool(); toast(t('imported')); }
+      catch (err) { toast(t('importError'), true); }
+    };
+    r.readAsText(f); e.target.value = '';
+  });
+  $('btnReset').addEventListener('click', () => {
+    if (!confirm(t('confirmReset'))) return;
+    state = defaultState(); save(); renderSchool();
+  });
+
+  function download(name, content, type) {
+    const blob = new Blob([content], { type });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
+
+  // ================= 2. МҰҒАЛІМДЕР =================
+  let editingId = null;
+  let formSubjects = new Set();
+
+  function renderTeacherForm() {
+    let opts = `<option value="-1">${t('none')}</option>`;
+    for (let d = 0; d < state.days; d++) opts += `<option value="${d}">${dayName(d)}</option>`;
+    const cur = $('tOff').value;
+    $('tOff').innerHTML = opts;
+    $('tOff').value = cur && Number(cur) < state.days ? cur : '-1';
+    $('tSubjects').innerHTML = Object.keys(D.SUBJECTS).map(s =>
+      `<button type="button" class="chip ${formSubjects.has(s) ? 'on' : ''}" data-s="${s}" style="--c:${D.SUBJECTS[s].color}">${esc(subjName(s))}</button>`).join('');
+    $('tSubjects').querySelectorAll('.chip').forEach(ch => ch.addEventListener('click', () => {
+      formSubjects.has(ch.dataset.s) ? formSubjects.delete(ch.dataset.s) : formSubjects.add(ch.dataset.s);
+      ch.classList.toggle('on');
+    }));
+    $('btnAddTeacher').textContent = editingId ? t('updateTeacher') : t('addTeacher');
+    $('btnCancelEdit').hidden = !editingId;
+  }
+
+  function renderTeachers() {
+    renderTeacherForm();
+    $('teacherCount').textContent = state.teachers.length;
+    if (!state.teachers.length) { $('teacherTable').innerHTML = `<tr><td class="empty">${t('noTeachers')}</td></tr>`; return; }
+    let h = `<tr><th>#</th><th>${t('teacherName')}</th><th>${t('subject')}</th><th>${t('maxHours')}</th><th>${t('offDay')}</th><th></th></tr>`;
+    state.teachers.forEach((x, i) => {
+      h += `<tr><td>${i + 1}</td><td><b>${esc(x.name)}</b></td>
+        <td>${x.subjects.map(s => `<span class="tag" style="--c:${D.SUBJECTS[s] ? D.SUBJECTS[s].color : '#888'}">${esc(subjName(s))}</span>`).join(' ')}</td>
+        <td>${x.maxHours}</td><td>${x.offDay >= 0 ? dayName(x.offDay) : t('none')}</td>
+        <td class="nowrap"><button class="btn sm" data-edit="${x.id}">${t('edit')}</button>
+        <button class="btn sm danger" data-del="${x.id}">${t('del')}</button></td></tr>`;
+    });
+    $('teacherTable').innerHTML = h;
+    $('teacherTable').querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => {
+      const x = teacherById(b.dataset.edit);
+      editingId = x.id; formSubjects = new Set(x.subjects);
+      $('tName').value = x.name; $('tMax').value = x.maxHours;
+      renderTeacherForm(); $('tOff').value = String(x.offDay);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }));
+    $('teacherTable').querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => {
+      state.teachers = state.teachers.filter(x => x.id !== b.dataset.del);
+      Object.values(state.assignments).forEach(cls => Object.keys(cls).forEach(s => { cls[s] = cls[s].filter(id => id !== b.dataset.del); }));
+      save(); renderTeachers();
+    }));
+  }
+
+  $('btnAddTeacher').addEventListener('click', () => {
+    const name = $('tName').value.trim();
+    if (!name || !formSubjects.size) { toast(t('needName'), true); return; }
+    const data = { name, subjects: [...formSubjects], maxHours: Number($('tMax').value) || D.RULES.teacherMaxDefault, offDay: Number($('tOff').value) };
+    if (editingId) Object.assign(teacherById(editingId), data);
+    else state.teachers.push(Object.assign({ id: uid() }, data));
+    editingId = null; formSubjects = new Set(); $('tName').value = ''; $('tMax').value = D.RULES.teacherMaxDefault;
+    save(); renderTeachers(); toast(t('saved'));
+  });
+  $('btnCancelEdit').addEventListener('click', () => {
+    editingId = null; formSubjects = new Set(); $('tName').value = ''; renderTeachers();
+  });
+
+
+  // ---------- Мұғалімдерді Excel-ден жүктеу / Excel-ге сақтау ----------
+  const XLSX_URL = 'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js';
+  let xlsxLoading = null;
+  function loadXLSX() {
+    if (window.XLSX) return Promise.resolve(window.XLSX);
+    if (!xlsxLoading) {
+      xlsxLoading = new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = XLSX_URL;
+        s.onload = () => (window.XLSX ? resolve(window.XLSX) : reject(new Error('XLSX')));
+        s.onerror = () => { xlsxLoading = null; s.remove(); reject(new Error('XLSX')); };
+        document.head.appendChild(s);
+      });
+    }
+    return xlsxLoading;
+  }
+
+  const normTxt = s => String(s == null ? '' : s).toLowerCase().replace(/ё/g, 'е').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+
+  // Пән атауларының синонимдері (қазақша / орысша / ағылшынша)
+  const SUBJ_ALIASES = {
+    'қазақ тілі мен әдебиеті': ['kaz_lang', 'kaz_lit'], 'қазақ тілі және әдебиеті': ['kaz_lang', 'kaz_lit'],
+    'казахский язык': ['kaz_lang'], 'казахская литература': ['kaz_lit'], 'казахский язык и литература': ['kaz_lang', 'kaz_lit'],
+    'орыс тілі': ['rus'], 'орыс әдебиеті': ['rus'], 'русский язык': ['rus'], 'русская литература': ['rus'],
+    'русский язык и литература': ['rus'], 'russian': ['rus'],
+    'ағылшын': ['eng'], 'английский': ['eng'], 'английский язык': ['eng'],
+    'maths': ['math'], 'math': ['math'],
+    'ақпараттық технологиялар': ['informatics'], 'ict': ['informatics'], 'икт': ['informatics'],
+    'естествознание': ['science'],
+    'история казахстана': ['hist_kz'], 'всемирная история': ['hist_world'], 'дүние жүзі тарихы': ['hist_world'],
+    'тарих': ['hist_kz', 'hist_world'], 'история': ['hist_kz', 'hist_world'], 'history': ['hist_kz', 'hist_world'],
+    'құқық': ['law'], 'основы права': ['law'], 'право': ['law'],
+    'художественный труд': ['art'], 'еңбекке баулу': ['art'], 'технология': ['art'], 'труд': ['art'],
+    'физическая культура': ['pe'], 'физкультура': ['pe'], 'pe': ['pe'],
+    'аәтд': ['nvtp'], 'нвтп': ['nvtp'], 'нвп': ['nvtp'], 'әскери дайындық': ['nvtp']
+  };
+  const aliasIndex = (() => {
+    const list = [];
+    Object.keys(D.SUBJECTS).forEach(k => {
+      [k, k.replace(/_/g, ' '), D.SUBJECTS[k].kk, D.SUBJECTS[k].en].forEach(a => list.push([normTxt(a), [k]]));
+    });
+    Object.keys(SUBJ_ALIASES).forEach(a => list.push([normTxt(a), SUBJ_ALIASES[a]]));
+    return list.filter(x => x[0]);
+  })();
+  function matchSubject(raw, exactOnly) {
+    const n = normTxt(raw);
+    if (!n) return null;
+    const exact = aliasIndex.find(([a]) => a === n);
+    if (exact) return exact[1];
+    if (exactOnly) return null;
+    let best = null, bestLen = 0;
+    aliasIndex.forEach(([a, keys]) => {
+      const ok = (a.length >= 4 && n.includes(a)) || (n.length >= 4 && a.startsWith(n));
+      if (ok && a.length > bestLen) { best = keys; bestLen = a.length; }
+    });
+    return best;
+  }
+
+  const DAY_PREFIX = [['дүй', 'дуй', 'пон', 'mon'], ['сей', 'вто', 'tue'], ['сәр', 'сар', 'сре', 'wed'],
+                      ['бей', 'чет', 'thu'], ['жұм', 'жум', 'пят', 'fri'], ['сен', 'суб', 'sat']];
+  function parseDay(v) {
+    const n = normTxt(v);
+    if (!n) return -1;
+    if (/^[1-6]$/.test(n)) return Number(n) - 1;
+    return DAY_PREFIX.findIndex(ps => ps.some(p => n.startsWith(p)));
+  }
+
+  function parseCsv(text) {
+    text = String(text).replace(/^﻿/, '');
+    const first = text.split(/\r?\n/)[0] || '';
+    const delim = [';', '\t', ','].map(d => [d, first.split(d).length]).sort((a, b) => b[1] - a[1])[0][0];
+    const rows = [];
+    let row = [], cell = '', q = false;
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (q) {
+        if (ch === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; } else cell += ch;
+      } else if (ch === '"') q = true;
+      else if (ch === delim) { row.push(cell); cell = ''; }
+      else if (ch === '\n' || ch === '\r') {
+        if (ch === '\r' && text[i + 1] === '\n') i++;
+        row.push(cell); rows.push(row); row = []; cell = '';
+      } else cell += ch;
+    }
+    if (cell || row.length) { row.push(cell); rows.push(row); }
+    return rows;
+  }
+
+  function parseTeacherRows(rows) {
+    rows = (rows || []).filter(r => Array.isArray(r) && r.some(c => String(c).trim()));
+    const KW = {
+      off: /(әдіст|адист|методич|демалыс|выходн|day off|off day|methodical)/,
+      hours: /(сағат|сагат|час|hour|макс|max|жүктеме|нагрузк)/,
+      subj: /(пән|предмет|subject|дисципл)/,
+      name: /(аты|фио|ф и о|name|мұғалім|учител|педагог|teacher)/
+    };
+    let head = -1, cols = { name: 0, subj: 1, hours: 2, off: 3 };
+    for (let i = 0; i < Math.min(5, rows.length); i++) {
+      const found = {};
+      rows[i].forEach((c, ci) => {
+        const n = normTxt(c);
+        for (const k of ['off', 'hours', 'subj', 'name']) if (!(k in found) && KW[k].test(n)) { found[k] = ci; break; }
+      });
+      if ('name' in found) {
+        head = i;
+        cols = { name: found.name, subj: 'subj' in found ? found.subj : found.name + 1,
+                 hours: 'hours' in found ? found.hours : -1, off: 'off' in found ? found.off : -1 };
+        break;
+      }
+    }
+    const cell = (r, i) => (i >= 0 && r[i] != null ? String(r[i]).trim() : '');
+    const byName = new Map();
+    rows.slice(head + 1).forEach(r => {
+      const name = cell(r, cols.name).replace(/\s+/g, ' ');
+      if (!name || /^\d+$/.test(name)) return;
+      const subjCell = cell(r, cols.subj);
+      const subjects = new Set(), unknown = [];
+      const whole = matchSubject(subjCell, true);
+      const parts = whole ? [subjCell] : subjCell.split(/[,;\/\n+|]+/);
+      parts.map(s => s.trim()).filter(Boolean).forEach(p => {
+        const keys = whole && p === subjCell ? whole : matchSubject(p);
+        if (keys) keys.forEach(k => subjects.add(k)); else unknown.push(p);
+      });
+      let maxHours = parseFloat(cell(r, cols.hours).replace(',', '.'));
+      maxHours = maxHours > 0 ? Math.min(40, Math.round(maxHours)) : D.RULES.teacherMaxDefault;
+      let offDay = parseDay(cell(r, cols.off));
+      if (offDay >= state.days) offDay = -1;
+      const key = normTxt(name);
+      const prev = byName.get(key);
+      if (prev) { subjects.forEach(s => { if (!prev.subjects.includes(s)) prev.subjects.push(s); }); prev.unknown.push(...unknown); return; }
+      byName.set(key, { name, subjects: [...subjects], unknown, maxHours, offDay });
+    });
+    return [...byName.values()];
+  }
+
+  let excelData = null;
+  function renderExcelPreview() {
+    const box = $('excelPreview');
+    if (!excelData) { box.innerHTML = ''; return; }
+    if (!excelData.length) { box.innerHTML = `<div class="alert warn">${t('excelEmpty')}</div>`; return; }
+    const ready = excelData.filter(r => r.subjects.length).length;
+    let h = `<div class="alert ${ready === excelData.length ? 'ok' : 'warn'}">${t('excelRows')}: <b>${excelData.length}</b> · ${t('excelReady')}: <b>${ready}</b></div>
+      <div class="scroll"><table class="tbl"><tr><th>#</th><th>${t('teacherName')}</th><th>${t('colSubjects')}</th><th>${t('maxHours')}</th><th>${t('offDay')}</th><th></th></tr>`;
+    excelData.forEach((r, i) => {
+      const exists = state.teachers.some(x => normTxt(x.name) === normTxt(r.name));
+      const tags = r.subjects.map(s => `<span class="tag" style="--c:${D.SUBJECTS[s].color}">${esc(subjName(s))}</span>`)
+        .concat(r.unknown.map(u => `<span class="tag unknown" title="${t('excelUnknown')}">${esc(u)}</span>`)).join(' ');
+      const st = !r.subjects.length ? `<span class="pill bad">${t('excelNoSubj')}</span>`
+        : `<span class="pill ${exists ? 'warn' : 'ok'}">${t(exists ? 'excelUpdate' : 'excelNew')}</span>`;
+      h += `<tr class="${r.subjects.length ? '' : 'muted'}"><td>${i + 1}</td><td><b>${esc(r.name)}</b></td><td>${tags}</td>
+        <td>${r.maxHours}</td><td>${r.offDay >= 0 ? dayName(r.offDay) : t('none')}</td><td>${st}</td></tr>`;
+    });
+    h += `</table></div>
+      <div class="excel-opts">
+        <label><input type="radio" name="exMode" value="append" checked> ${t('excelAppend')}</label>
+        <label><input type="radio" name="exMode" value="replace"> ${t('excelReplace')}</label>
+      </div>
+      <div class="btn-row">
+        <button class="btn primary" id="btnExcelImport" ${ready ? '' : 'disabled'}>${t('excelImport')} (${ready})</button>
+        <button class="btn" id="btnExcelCancel">${t('cancel')}</button>
+      </div>`;
+    box.innerHTML = h;
+    $('btnExcelImport').addEventListener('click', doExcelImport);
+    $('btnExcelCancel').addEventListener('click', () => { excelData = null; renderExcelPreview(); });
+  }
+
+  function doExcelImport() {
+    const mode = (document.querySelector('input[name="exMode"]:checked') || {}).value || 'append';
+    const rows = excelData.filter(r => r.subjects.length);
+    if (mode === 'replace') {
+      if (!confirm(t('confirmReplace'))) return;
+      state.teachers = []; state.assignments = {}; state.schedules = [null, null, null, null];
+    }
+    let added = 0, updated = 0;
+    rows.forEach(r => {
+      const data = { name: r.name, subjects: r.subjects.slice(), maxHours: r.maxHours, offDay: r.offDay };
+      const ex = state.teachers.find(x => normTxt(x.name) === normTxt(r.name));
+      if (ex) { Object.assign(ex, data); updated++; }
+      else { state.teachers.push(Object.assign({ id: uid() + added }, data)); added++; }
+    });
+    excelData = null;
+    save(); renderTeachers(); renderExcelPreview();
+    toast(`${t('excelDone')}: +${added} ${t('excelNew')}, ${updated} ${t('excelUpdated')}`);
+  }
+
+  $('excelFile').addEventListener('change', async e => {
+    const f = e.target.files[0];
+    e.target.value = '';
+    if (!f) return;
+    try {
+      let rows;
+      if (/\.(csv|txt)$/i.test(f.name)) rows = parseCsv(await f.text());
+      else {
+        let X;
+        try { X = await loadXLSX(); } catch (err) { throw new Error(t('excelLibErr')); }
+        const wb = X.read(await f.arrayBuffer(), { type: 'array' });
+        rows = X.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, defval: '', raw: false });
+      }
+      excelData = parseTeacherRows(rows);
+      renderExcelPreview();
+    } catch (err) { toast(err.message || t('importError'), true); }
+  });
+
+  function teacherSheetRows(list) {
+    return [[t('teacherName'), t('colSubjects'), t('maxHours'), t('offDay')],
+      ...list.map(x => [x.name, x.subjects.map(subjName).join(', '), x.maxHours, x.offDay >= 0 ? dayName(x.offDay) : ''])];
+  }
+  async function saveSheet(fileBase, rows) {
+    let X;
+    try { X = await loadXLSX(); } catch (e) { downloadCsv(fileBase + '.csv', rows); toast(t('excelLibErr'), true); return; }
+    const wb = X.utils.book_new();
+    const ws = X.utils.aoa_to_sheet(rows);
+    ws['!cols'] = [{ wch: 28 }, { wch: 46 }, { wch: 18 }, { wch: 18 }];
+    X.utils.book_append_sheet(wb, ws, t('teachersSheet'));
+    const ref = [[t('subject'), 'English'], ...Object.keys(D.SUBJECTS).map(k => [D.SUBJECTS[k].kk, D.SUBJECTS[k].en])];
+    const ws2 = X.utils.aoa_to_sheet(ref);
+    ws2['!cols'] = [{ wch: 46 }, { wch: 42 }];
+    X.utils.book_append_sheet(wb, ws2, t('subjectsSheet'));
+    X.writeFile(wb, fileBase + '.xlsx');
+  }
+  $('btnTemplate').addEventListener('click', () => saveSheet('mugalimder-shablon', teacherSheetRows([
+    { name: 'Асанова Гүлнар', subjects: ['kaz_lang', 'kaz_lit'], maxHours: 24, offDay: -1 },
+    { name: 'Тоқтаров Бауыржан', subjects: ['math', 'algebra', 'geometry'], maxHours: 22, offDay: 2 },
+    { name: 'Smith John', subjects: ['eng'], maxHours: 18, offDay: -1 }
+  ])));
+  $('btnExcelExport').addEventListener('click', () => {
+    if (!state.teachers.length) { toast(t('noTeachers'), true); return; }
+    saveSheet('mugalimder', teacherSheetRows(state.teachers));
+  });
+
+  // ================= 3. ОҚУ ЖОСПАРЫ =================
+  function renderPlan() {
+    const subs = planSubjects();
+    let h = `<tr><th>${t('subject')}</th>${GRADES.map(g => `<th>${g}</th>`).join('')}</tr>`;
+    subs.forEach(s => {
+      h += `<tr><td class="subj"><span class="dot" style="background:${D.SUBJECTS[s].color}"></span>${esc(subjName(s))}</td>`;
+      GRADES.forEach(g => {
+        const v = (state.plan[g] || {})[s];
+        const txt = v === undefined ? '' : (Array.isArray(v) ? v.join(',') : v);
+        h += `<td><input class="num plan-in" data-g="${g}" data-s="${s}" value="${txt}"></td>`;
+      });
+      h += '</tr>';
+    });
+    h += `<tr class="total"><td>${t('weeklyTotal')}</td>${GRADES.map(g => {
+      const sum = Object.values(state.plan[g] || {}).reduce((a, v) => a + D.hoursFor(v, 0), 0);
+      const over = sum > D.RULES.maxWeekly[g];
+      return `<td class="${over ? 'bad' : ''}">${sum}</td>`;
+    }).join('')}</tr>`;
+    h += `<tr class="muted"><td>${t('maxWeekly')}</td>${GRADES.map(g => `<td>${D.RULES.maxWeekly[g]}</td>`).join('')}</tr>`;
+    $('planTable').innerHTML = h;
+    $('planTable').querySelectorAll('.plan-in').forEach(el => el.addEventListener('change', () => {
+      const g = el.dataset.g, s = el.dataset.s, raw = el.value.trim();
+      state.plan[g] = state.plan[g] || {};
+      if (!raw || raw === '0') delete state.plan[g][s];
+      else if (raw.includes(',')) state.plan[g][s] = raw.split(',').slice(0, 4).map(x => Number(x) || 0);
+      else state.plan[g][s] = Number(raw) || 0;
+      state.schedules = [null, null, null, null];
+      save(); renderPlan();
+    }));
+
+    const weeks = [0, 1, 2, 3].map(weeksIn);
+    let a = `<tr><th>${t('subject')}</th>${GRADES.map(g => `<th>${g}</th>`).join('')}</tr>`;
+    const totals = GRADES.map(() => 0);
+    subs.forEach(s => {
+      a += `<tr><td class="subj">${esc(subjName(s))}</td>`;
+      GRADES.forEach((g, gi) => {
+        const v = (state.plan[g] || {})[s];
+        if (v === undefined) { a += '<td></td>'; return; }
+        const perQ = weeks.map((w, q) => D.hoursFor(v, q) * w);
+        const sum = perQ.reduce((x, y) => x + y, 0);
+        totals[gi] += sum;
+        a += `<td title="${perQ.join(' + ')}"><b>${sum}</b><small>${perQ.join('/')}</small></td>`;
+      });
+      a += '</tr>';
+    });
+    a += `<tr class="total"><td>${t('total')}</td>${totals.map(x => `<td>${x}</td>`).join('')}</tr>`;
+    $('annualTable').innerHTML = a;
+  }
+  $('btnResetPlan').addEventListener('click', () => {
+    state.plan = JSON.parse(JSON.stringify(D.CURRICULUM)); state.schedules = [null, null, null, null]; save(); renderPlan();
+  });
+
+  // ================= 4. ЖҮКТЕМЕ =================
+  function renderLoad() {
+    const cls = classes();
+    const subs = planSubjects();
+    let h = `<tr><th>${t('classCol')}</th>${subs.map(s => `<th class="vert"><span>${esc(subjName(s))}</span></th>`).join('')}</tr>`;
+    cls.forEach(c => {
+      h += `<tr><td><b>${c.id}</b></td>`;
+      subs.forEach(s => {
+        const v = (state.plan[c.grade] || {})[s];
+        if (v === undefined || D.avgHours(v) <= 0) { h += '<td class="na"></td>'; return; }
+        const groups = (c.split && D.SUBJECTS[s].splittable) ? 2 : 1;
+        const cur = ((state.assignments[c.id] || {})[s]) || [];
+        let cell = '';
+        for (let gi = 0; gi < groups; gi++) {
+          const opts = state.teachers.filter(x => D.qualifies(x, s));
+          cell += `<select class="as-sel ${cur[gi] ? '' : 'empty'}" data-c="${c.id}" data-s="${s}" data-gi="${gi}">
+            <option value="">${t('notAssigned')}</option>
+            ${opts.map(x => `<option value="${x.id}" ${cur[gi] === x.id ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}
+          </select>`;
+        }
+        h += `<td>${cell}</td>`;
+      });
+      h += '</tr>';
+    });
+    $('assignTable').innerHTML = h;
+    $('assignTable').querySelectorAll('.as-sel').forEach(el => el.addEventListener('change', () => {
+      const a = state.assignments[el.dataset.c] = state.assignments[el.dataset.c] || {};
+      const arr = a[el.dataset.s] = a[el.dataset.s] || [];
+      arr[Number(el.dataset.gi)] = el.value;
+      a[el.dataset.s] = Array.from(arr, x => x || '');
+      save(); renderLoadTable(); el.classList.toggle('empty', !el.value);
+    }));
+    renderLoadTable();
+  }
+
+  function renderLoadTable() {
+    const cls = classes();
+    const load = Assign.computeLoad(cls, state.plan, state.teachers, cleanAssignments());
+    let h = `<tr><th>${t('teacherName')}</th><th>${t('subject')}</th><th>${t('hours')}</th><th>${t('rate')}</th><th>${t('maxHours')}</th><th></th></tr>`;
+    state.teachers.forEach(x => {
+      const l = Math.round(load[x.id] * 10) / 10;
+      const pct = Math.min(100, (l / (x.maxHours || 24)) * 100);
+      const over = l > x.maxHours;
+      h += `<tr><td><b>${esc(x.name)}</b></td><td>${x.subjects.map(subjName).map(esc).join(', ')}</td>
+        <td class="${over ? 'bad' : ''}"><b>${l}</b></td><td>${(l / D.RULES.teacherRate).toFixed(2)}</td><td>${x.maxHours}</td>
+        <td class="barcell"><div class="mini-bar ${over ? 'over' : ''}"><i style="width:${pct}%"></i></div></td></tr>`;
+    });
+    $('loadTable').innerHTML = h;
+  }
+
+  function cleanAssignments() {
+    const ids = new Set(state.teachers.map(x => x.id));
+    const out = {};
+    Object.keys(state.assignments).forEach(c => {
+      out[c] = {};
+      Object.keys(state.assignments[c]).forEach(s => { out[c][s] = (state.assignments[c][s] || []).filter(id => ids.has(id)); });
+    });
+    return out;
+  }
+
+  $('btnAssign').addEventListener('click', () => {
+    const r = Assign.assignTeachers(classes(), state.plan, state.teachers);
+    state.assignments = r.assignments; state.schedules = [null, null, null, null];
+    save(); renderLoad();
+    let w = '';
+    if (r.unassigned.length) {
+      const list = [...new Set(r.unassigned.map(u => u.cid + ' — ' + subjName(u.subj)))];
+      w += `<div class="alert bad"><b>${t('unassignedWarn')}:</b> ${list.map(esc).join('; ')}</div>`;
+    }
+    if (r.overloaded.length) {
+      w += `<div class="alert warn"><b>${t('overloadWarn')}:</b> ${r.overloaded.map(o => esc(tName(o.id)) + ' (' + o.load + '/' + o.max + ')').join('; ')}</div>`;
+    }
+    $('assignWarnings').innerHTML = w;
+    toast(t('saved'));
+  });
+
+  // ================= 5. КЕСТЕ =================
+  let selectedCell = null;
+
+  function fillQuarterSelect(el) {
+    const cur = el.value;
+    el.innerHTML = [0, 1, 2, 3].map(q => `<option value="${q}">${['I', 'II', 'III', 'IV'][q]} ${t('quarter').toLowerCase()}</option>`).join('');
+    if (cur) el.value = cur;
+  }
+
+  function renderSchedule() {
+    fillQuarterSelect($('schQuarter'));
+    const view = $('schView').value || 'class';
+    const target = $('schTarget');
+    const cur = target.value;
+    if (view === 'class') {
+      $('schTargetWrap').hidden = false; $('schTargetLabel').textContent = t('classCol');
+      target.innerHTML = classes().map(c => `<option>${c.id}</option>`).join('');
+    } else if (view === 'teacher') {
+      $('schTargetWrap').hidden = false; $('schTargetLabel').textContent = t('teacherName');
+      target.innerHTML = state.teachers.map(x => `<option value="${x.id}">${esc(x.name)}</option>`).join('');
+    } else $('schTargetWrap').hidden = true;
+    if (cur && [...target.options].some(o => o.value === cur)) target.value = cur;
+    drawSchedule();
+  }
+  ['schQuarter', 'schTarget'].forEach(id => $(id).addEventListener('change', () => { selectedCell = null; drawSchedule(); }));
+  $('schView').addEventListener('change', () => { selectedCell = null; renderSchedule(); });
+
+  function cellHtml(x, q, cid, d, p, showClass) {
+    if (!x) return `<td class="cell free" data-q="${q}" data-c="${cid}" data-d="${d}" data-p="${p}"></td>`;
+    const col = (D.SUBJECTS[x.subj] || {}).color || '#888';
+    const sel = selectedCell && selectedCell.c === cid && selectedCell.d === d && selectedCell.p === p ? ' selected' : '';
+    const bad = (x.conflict || x.offDay) ? ' conflict' : '';
+    return `<td class="cell${sel}${bad}" style="--c:${col}" data-q="${q}" data-c="${cid}" data-d="${d}" data-p="${p}">
+      <div class="s">${esc(subjName(x.subj))}</div>
+      <div class="tch">${showClass ? '<b>' + cid + '</b> · ' : ''}${x.teachers.map(tName).map(esc).join(' / ')}</div></td>`;
+  }
+
+  function drawSchedule() {
+    const q = Number($('schQuarter').value || 0);
+    const sch = state.schedules[q];
+    const out = $('scheduleOut');
+    if (!sch) { out.innerHTML = `<div class="card empty">${t('notGenerated')}</div>`; $('schStatus').innerHTML = ''; return; }
+    renderStatus(sch);
+    const view = $('schView').value;
+    const P = sch.periods, Dn = sch.days;
+    let h = '';
+    if (view === 'class') {
+      const cid = $('schTarget').value;
+      const g = sch.grid[cid];
+      if (!g) { out.innerHTML = `<div class="card empty">${t('notGenerated')}</div>`; return; }
+      h = `<div class="card print-card"><h2 class="print-title">${esc(cid)} — ${['I', 'II', 'III', 'IV'][q]} ${t('quarter').toLowerCase()}</h2>
+        <div class="scroll"><table class="tt"><tr><th>${t('period')}</th><th>${t('time')}</th>${[...Array(Dn).keys()].map(d => `<th>${dayName(d)}</th>`).join('')}</tr>`;
+      for (let p = 0; p < P; p++) {
+        h += `<tr><td class="pn">${p + 1}</td><td class="bell">${D.BELLS[p] || ''}</td>`;
+        for (let d = 0; d < Dn; d++) h += cellHtml(g[d][p], q, cid, d, p, false);
+        h += '</tr>';
+      }
+      h += '</table></div></div>';
+    } else if (view === 'teacher') {
+      const tid = $('schTarget').value;
+      const tg = [...Array(Dn)].map(() => Array(P).fill(null));
+      let total = 0;
+      Object.keys(sch.grid).forEach(cid => sch.grid[cid].forEach((row, d) => row.forEach((x, p) => {
+        if (x && x.teachers.includes(tid)) { tg[d][p] = tg[d][p] ? Object.assign({}, x, { conflict: true, cid: tg[d][p].cid + ',' + cid }) : Object.assign({}, x, { cid }); total++; }
+      })));
+      h = `<div class="card print-card"><h2 class="print-title">${esc(tName(tid))} — ${['I', 'II', 'III', 'IV'][q]} ${t('quarter').toLowerCase()} · ${total} ${t('hours').toLowerCase()}</h2>
+        <div class="scroll"><table class="tt"><tr><th>${t('period')}</th><th>${t('time')}</th>${[...Array(Dn).keys()].map(d => `<th>${dayName(d)}</th>`).join('')}</tr>`;
+      for (let p = 0; p < P; p++) {
+        h += `<tr><td class="pn">${p + 1}</td><td class="bell">${D.BELLS[p] || ''}</td>`;
+        for (let d = 0; d < Dn; d++) {
+          const x = tg[d][p];
+          if (!x) { h += '<td class="cell free"></td>'; continue; }
+          h += `<td class="cell${x.conflict ? ' conflict' : ''}" style="--c:${D.SUBJECTS[x.subj].color}"><div class="s">${esc(x.cid)}</div><div class="tch">${esc(subjName(x.subj))}</div></td>`;
+        }
+        h += '</tr>';
+      }
+      h += '</table></div></div>';
+    } else {
+      const cids = Object.keys(sch.grid);
+      h = `<div class="card print-card"><h2 class="print-title">${t('allClasses')} — ${['I', 'II', 'III', 'IV'][q]} ${t('quarter').toLowerCase()}</h2>
+        <div class="scroll"><table class="tt all"><tr><th></th><th>${t('period')}</th>${cids.map(c => `<th>${c}</th>`).join('')}</tr>`;
+      for (let d = 0; d < Dn; d++) {
+        for (let p = 0; p < P; p++) {
+          h += `<tr class="${p === 0 ? 'day-start' : ''}">${p === 0 ? `<td class="dayname" rowspan="${P}"><span>${dayName(d)}</span></td>` : ''}<td class="pn">${p + 1}</td>`;
+          cids.forEach(cid => { h += cellHtml(sch.grid[cid][d][p], q, cid, d, p, false); });
+          h += '</tr>';
+        }
+      }
+      h += '</table></div></div>';
+    }
+    out.innerHTML = h;
+    out.querySelectorAll('td.cell[data-c]').forEach(td => td.addEventListener('click', () => onCellClick(td)));
+  }
+
+  function onCellClick(td) {
+    const q = Number(td.dataset.q), c = td.dataset.c, d = Number(td.dataset.d), p = Number(td.dataset.p);
+    if (!selectedCell || selectedCell.c !== c) { selectedCell = { c, d, p }; drawSchedule(); return; }
+    if (selectedCell.d === d && selectedCell.p === p) { selectedCell = null; drawSchedule(); return; }
+    const g = state.schedules[q].grid[c];
+    const tmp = g[selectedCell.d][selectedCell.p];
+    g[selectedCell.d][selectedCell.p] = g[d][p];
+    g[d][p] = tmp;
+    selectedCell = null;
+    state.schedules[q].violations = Scheduler.validate(state.schedules[q].grid, teacherOffMap());
+    save(); drawSchedule();
+  }
+
+  function renderStatus(sch) {
+    const v = sch.violations || [];
+    if (!v.length) { $('schStatus').innerHTML = `<div class="alert ok">${t('noConflicts')}</div>`; return; }
+    const label = { teacher: t('vTeacher'), offday: t('vOffday'), triple: t('vTriple'), gap: t('vGap') };
+    const items = v.slice(0, 12).map(x => `${esc(x.classId)} · ${dayName(x.day)}${x.period !== undefined ? ' · ' + (x.period + 1) : ''}${x.subj ? ' · ' + esc(subjName(x.subj)) : ''} — ${label[x.type]}`);
+    $('schStatus').innerHTML = `<div class="alert warn"><b>${t('conflictsFound')}: ${v.length}</b><br>${items.join('<br>')}${v.length > 12 ? '<br>…' : ''}</div>`;
+  }
+
+  async function generateQuarter(q, label) {
+    const cls = classes();
+    const { lessons, missing } = Scheduler.buildLessons(cls, state.plan, cleanAssignments(), q);
+    if (missing.length) {
+      throw new Error(t('missingErr') + ': ' + [...new Set(missing.map(m => m.classId + ' ' + subjName(m.subj)))].slice(0, 8).join(', '));
+    }
+    const input = {
+      days: state.days,
+      classes: cls.map(c => ({ id: c.id, maxPerDay: D.RULES.maxPerDay[c.grade] })),
+      lessons, teacherOff: teacherOffMap(), seed: 1000 + q * 7919
+    };
+    try {
+      const res = await Scheduler.generate(input, (f, cost) => setProgress(f, label));
+      state.schedules[q] = { grid: res.grid, days: res.days, periods: res.periods, violations: res.violations, created: new Date().toISOString() };
+    } catch (e) {
+      if (String(e.message).startsWith('CAPACITY')) {
+        const [, cid, n, max] = e.message.split(':');
+        throw new Error(`${t('capacityErr')}: ${cid} (${n} > ${max})`);
+      }
+      throw e;
+    }
+  }
+
+  function setProgress(f, label) {
+    $('progress').hidden = false;
+    $('progressBar').style.width = Math.round(f * 100) + '%';
+    $('progressText').textContent = (label || t('generating')) + ' ' + Math.round(f * 100) + '%';
+  }
+
+  async function runGenerate(qs) {
+    if (!Object.keys(state.assignments).length) { toast(t('assignFirst'), true); return; }
+    const btns = [$('btnGenerate'), $('btnGenerateAll')];
+    btns.forEach(b => { b.disabled = true; });
+    try {
+      for (const q of qs) await generateQuarter(q, t('generating') + ' (' + ['I', 'II', 'III', 'IV'][q] + ')');
+      save(); toast(t('saved'));
+    } catch (e) {
+      toast(e.message, true);
+      $('schStatus').innerHTML = `<div class="alert bad">${esc(e.message)}</div>`;
+    } finally {
+      btns.forEach(b => { b.disabled = false; });
+      $('progress').hidden = true;
+      drawSchedule();
+    }
+  }
+  $('btnGenerate').addEventListener('click', () => runGenerate([Number($('schQuarter').value || 0)]));
+  $('btnGenerateAll').addEventListener('click', () => runGenerate([0, 1, 2, 3]));
+  $('btnPrint').addEventListener('click', () => window.print());
+
+  $('btnCsv').addEventListener('click', () => {
+    const q = Number($('schQuarter').value || 0);
+    const sch = state.schedules[q];
+    if (!sch) { toast(t('notGenerated'), true); return; }
+    const cids = Object.keys(sch.grid);
+    const rows = [[t('lesson'), t('period'), ...cids]];
+    for (let d = 0; d < sch.days; d++) for (let p = 0; p < sch.periods; p++) {
+      rows.push([dayName(d), p + 1, ...cids.map(c => {
+        const x = sch.grid[c][d][p];
+        return x ? subjName(x.subj) + ' (' + x.teachers.map(tName).join('/') + ')' : '';
+      })]);
+    }
+    downloadCsv(`kesteh-${q + 1}-toqsan.csv`, rows);
+  });
+
+  function downloadCsv(name, rows) {
+    const csv = rows.map(r => r.map(v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"').join(';')).join('\r\n');
+    download(name, '﻿' + csv, 'text/csv;charset=utf-8');
+  }
+
+  // ================= 6. ҚТЖ / ОМЖ =================
+  function renderKtpControls() {
+    fillQuarterSelect($('ktpQuarter'));
+    const cur = $('ktpClass').value;
+    $('ktpClass').innerHTML = classes().map(c => `<option>${c.id}</option>`).join('');
+    if (cur && [...$('ktpClass').options].some(o => o.value === cur)) $('ktpClass').value = cur;
+    fillKtpSubjects();
+    drawKtp();
+  }
+  function fillKtpSubjects() {
+    const c = classes().find(x => x.id === $('ktpClass').value);
+    const cur = $('ktpSubject').value;
+    const subs = c ? Object.keys(state.plan[c.grade] || {}) : [];
+    $('ktpSubject').innerHTML = subs.map(s => `<option value="${s}">${esc(subjName(s))}</option>`).join('');
+    if (cur && subs.includes(cur)) $('ktpSubject').value = cur;
+  }
+  $('ktpClass').addEventListener('change', () => { fillKtpSubjects(); drawKtp(); });
+  ['ktpSubject', 'ktpQuarter', 'ktpType'].forEach(id => $(id).addEventListener('change', drawKtp));
+
+  const ktpKey = () => [$('ktpClass').value, $('ktpSubject').value, $('ktpQuarter').value, $('ktpType').value].join('|');
+  const ktpCtx = () => {
+    const cid = $('ktpClass').value;
+    const c = classes().find(x => x.id === cid);
+    const subj = $('ktpSubject').value;
+    const q = Number($('ktpQuarter').value || 0);
+    const planned = c ? D.hoursFor((state.plan[c.grade] || {})[subj], q) * weeksIn(q) : 0;
+    return { cid, c, subj, q, planned };
+  };
+
+  function computeKtpDates() {
+    const { cid, subj, q, planned } = ktpCtx();
+    const sch = state.schedules[q];
+    if (!sch || !sch.grid[cid]) { toast(t('needSchedule'), true); return null; }
+    const slots = {};
+    sch.grid[cid].forEach((row, d) => row.forEach((x, p) => { if (x && x.subj === subj) (slots[d] = slots[d] || []).push(p); }));
+    const rows = [];
+    schoolDates(q).forEach(dt => (slots[weekday(dt)] || []).forEach(p => rows.push({ date: fmt(dt), period: p + 1, section: '', topic: '', objectives: '', type: '' })));
+    const key = [cid, subj, q, 'ktp'].join('|');
+    const old = (state.ktp[key] || {}).rows || [];
+    rows.forEach((r, i) => { if (old[i]) Object.assign(r, { section: old[i].section, topic: old[i].topic, objectives: old[i].objectives, type: old[i].type }); });
+    state.ktp[key] = { rows, planned };
+    save();
+    return state.ktp[key];
+  }
+
+  function drawKtp() {
+    const type = $('ktpType').value;
+    const { c, subj, q, planned } = ktpCtx();
+    const data = state.ktp[ktpKey()];
+    const title = c ? `${c.id} · ${esc(subjName(subj))} · ${['I', 'II', 'III', 'IV'][q]} ${t('quarter').toLowerCase()}` : '';
+    $('btnDates').hidden = type !== 'ktp';
+    if (!data || !data.rows || !data.rows.length) {
+      $('ktpOut').innerHTML = `<h2 class="print-title">${title}</h2><p class="empty">${type === 'ktp' ? t('computeDates') : t('aiFill')} →</p>`;
+      $('ktpStatus').innerHTML = '';
+      return;
+    }
+    let h = `<h2 class="print-title">${type === 'ktp' ? t('ktp') : t('omj')}: ${title}</h2>`;
+    if (type === 'ktp') {
+      $('ktpStatus').innerHTML = `<div class="alert ${data.rows.length === planned ? 'ok' : 'warn'}">${t('planned')}: <b>${planned}</b> · ${t('actual')}: <b>${data.rows.length}</b></div>`;
+      h += `<div class="scroll"><table class="tbl ktp"><tr><th>№</th><th>${t('date')}</th><th>${t('section')}</th><th>${t('topic')}</th><th>${t('objectives')}</th><th>${t('type')}</th></tr>`;
+      data.rows.forEach((r, i) => {
+        h += `<tr><td>${i + 1}</td><td class="nowrap">${r.date}<small> · ${r.period}</small></td>
+          ${['section', 'topic', 'objectives', 'type'].map(k => `<td contenteditable="true" data-i="${i}" data-k="${k}">${esc(r[k])}</td>`).join('')}</tr>`;
+      });
+      h += '</table></div>';
+    } else {
+      $('ktpStatus').innerHTML = `<div class="alert ok">${t('hoursCol')}: <b>${planned}</b></div>`;
+      h += `<div class="scroll"><table class="tbl ktp"><tr><th>${t('section')}</th><th>${t('hoursCol')}</th><th>${t('topicsCol')}</th><th>${t('objectives')}</th><th>${t('results')}</th><th>${t('assessment')}</th></tr>`;
+      data.rows.forEach((r, i) => {
+        h += `<tr>${['section', 'hours', 'topics', 'objectives', 'results', 'assessment'].map(k => {
+          const v = Array.isArray(r[k]) ? r[k].join('\n') : r[k];
+          return `<td contenteditable="true" data-i="${i}" data-k="${k}" class="pre">${esc(v)}</td>`;
+        }).join('')}</tr>`;
+      });
+      h += '</table></div>';
+    }
+    $('ktpOut').innerHTML = h;
+    $('ktpOut').querySelectorAll('[contenteditable]').forEach(td => td.addEventListener('blur', () => {
+      data.rows[td.dataset.i][td.dataset.k] = td.innerText.trim(); save();
+    }));
+  }
+
+  $('btnDates').addEventListener('click', () => { if (computeKtpDates()) drawKtp(); });
+
+  $('btnAiFill').addEventListener('click', async () => {
+    if (!AI.settings().apiKey) { toast(t('aiNoKey'), true); openSettings(); return; }
+    const type = $('ktpType').value;
+    const { c, subj, q, planned } = ktpCtx();
+    if (!c || !subj) return;
+    const btn = $('btnAiFill'); btn.disabled = true;
+    $('ktpStatus').innerHTML = `<div class="alert"><span class="spinner"></span> ${t('aiWorking')}</div>`;
+    try {
+      if (type === 'ktp') {
+        const data = state.ktp[ktpKey()] && state.ktp[ktpKey()].rows.length ? state.ktp[ktpKey()] : computeKtpDates();
+        if (!data) return;
+        const items = await AI.generateKTP({ subject: D.SUBJECTS[subj].kk + ' / ' + D.SUBJECTS[subj].en, grade: c.grade, quarter: q + 1, count: data.rows.length, lang: I18N.lang });
+        data.rows.forEach((r, i) => {
+          const it = items[i] || {};
+          r.section = it.section || r.section; r.topic = it.topic || r.topic;
+          r.objectives = it.objectives || r.objectives; r.type = it.type && it.type !== 'lesson' ? it.type : '';
+        });
+      } else {
+        const items = await AI.generateOMJ({ subject: D.SUBJECTS[subj].kk + ' / ' + D.SUBJECTS[subj].en, grade: c.grade, quarter: q + 1, hours: planned, lang: I18N.lang });
+        state.ktp[ktpKey()] = { rows: items, planned };
+      }
+      save(); drawKtp();
+    } catch (e) {
+      $('ktpStatus').innerHTML = `<div class="alert bad">${t('error')}: ${esc(e.message === 'NO_KEY' ? t('aiNoKey') : e.message)}</div>`;
+    } finally { btn.disabled = false; }
+  });
+
+  $('btnKtpCsv').addEventListener('click', () => {
+    const data = state.ktp[ktpKey()];
+    if (!data) return;
+    const type = $('ktpType').value;
+    const rows = type === 'ktp'
+      ? [['№', t('date'), t('section'), t('topic'), t('objectives'), t('type')], ...data.rows.map((r, i) => [i + 1, r.date, r.section, r.topic, r.objectives, r.type])]
+      : [[t('section'), t('hoursCol'), t('topicsCol'), t('objectives'), t('results'), t('assessment')],
+         ...data.rows.map(r => ['section', 'hours', 'topics', 'objectives', 'results', 'assessment'].map(k => Array.isArray(r[k]) ? r[k].join('; ') : r[k]))];
+    downloadCsv(`${type}-${ktpKey().replace(/\|/g, '-')}.csv`, rows);
+  });
+  $('btnKtpPrint').addEventListener('click', () => window.print());
+
+  // ================= 7. AI =================
+  function renderAiControls() { fillQuarterSelect($('aiQuarter')); }
+
+  function scheduleSummary(q) {
+    const sch = state.schedules[q];
+    if (!sch) return null;
+    const cls = classes();
+    const load = Assign.computeLoad(cls, state.plan, state.teachers, cleanAssignments());
+    let s = `School timetable, quarter ${q + 1}, ${state.days}-day week. Grades 5–11, Kazakhstan.\n\n`;
+    Object.keys(sch.grid).forEach(cid => {
+      s += `Class ${cid}:\n`;
+      sch.grid[cid].forEach((row, d) => {
+        s += `  ${D.DAYS.en[d]}: ` + row.filter(Boolean).map(x => D.SUBJECTS[x.subj].en + ' [' + x.teachers.map(tName).join('/') + ']').join(', ') + '\n';
+      });
+    });
+    s += '\nTeacher weekly load (hours; max):\n' + state.teachers.map(x => `  ${x.name}: ${load[x.id]} / ${x.maxHours}`).join('\n');
+    s += `\n\nDetected hard violations: ${(sch.violations || []).length}`;
+    return s;
+  }
+
+  $('btnAnalyze').addEventListener('click', async () => {
+    if (!AI.settings().apiKey) { toast(t('aiNoKey'), true); openSettings(); return; }
+    const q = Number($('aiQuarter').value || 0);
+    const summary = scheduleSummary(q);
+    if (!summary) { toast(t('needSchedule'), true); return; }
+    const out = $('aiAnalysis');
+    out.innerHTML = `<span class="spinner"></span> ${t('aiWorking')}`;
+    try { out.innerHTML = md(await AI.analyzeSchedule(summary, I18N.lang)); }
+    catch (e) { out.innerHTML = `<div class="alert bad">${esc(e.message)}</div>`; }
+  });
+
+  const chatHistory = [];
+  function chatContext() {
+    const cls = classes();
+    const load = Assign.computeLoad(cls, state.plan, state.teachers, cleanAssignments());
+    let s = `Classes: ${cls.map(c => c.id).join(', ')}. Week: ${state.days} days.\n`;
+    s += 'Teachers: ' + state.teachers.map(x => `${x.name} (${x.subjects.map(sb => D.SUBJECTS[sb].en).join('/')}, ${load[x.id]}h)`).join('; ') + '\n';
+    s += 'Weekly curriculum: ' + GRADES.map(g => g + ': ' + Object.entries(state.plan[g] || {}).map(([k, v]) => D.SUBJECTS[k].en + ' ' + (Array.isArray(v) ? v.join('/') : v)).join(', ')).join(' | ');
+    const q = Number($('aiQuarter').value || 0);
+    const sum = scheduleSummary(q);
+    if (sum) s += '\n\n' + sum;
+    return s;
+  }
+  function drawChat() {
+    $('chatLog').innerHTML = chatHistory.map(m => `<div class="msg ${m.role}">${m.role === 'assistant' ? md(m.content) : esc(m.content)}</div>`).join('');
+    $('chatLog').scrollTop = $('chatLog').scrollHeight;
+  }
+  async function sendChat() {
+    const text = $('chatInput').value.trim();
+    if (!text) return;
+    if (!AI.settings().apiKey) { toast(t('aiNoKey'), true); openSettings(); return; }
+    chatHistory.push({ role: 'user', content: text });
+    $('chatInput').value = ''; drawChat();
+    $('chatLog').insertAdjacentHTML('beforeend', `<div class="msg assistant typing"><span class="spinner"></span></div>`);
+    try {
+      const reply = await AI.chat(chatHistory.slice(-12), chatContext(), I18N.lang);
+      chatHistory.push({ role: 'assistant', content: reply });
+    } catch (e) {
+      chatHistory.pop();
+      toast(e.message, true);
+    }
+    drawChat();
+  }
+  $('btnSend').addEventListener('click', sendChat);
+  $('chatInput').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); } });
+
+  // Қарапайым markdown → HTML
+  function md(src) {
+    const lines = esc(src).split('\n');
+    let html = '', inList = false;
+    lines.forEach(line => {
+      const l = line.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`(.+?)`/g, '<code>$1</code>');
+      if (/^\s*[-*•]\s+/.test(line)) {
+        if (!inList) { html += '<ul>'; inList = true; }
+        html += '<li>' + l.replace(/^\s*[-*•]\s+/, '') + '</li>';
+        return;
+      }
+      if (inList) { html += '</ul>'; inList = false; }
+      if (/^#{1,6}\s/.test(line)) html += '<h4>' + l.replace(/^#{1,6}\s/, '') + '</h4>';
+      else if (l.trim()) html += '<p>' + l + '</p>';
+    });
+    if (inList) html += '</ul>';
+    return html;
+  }
+
+  // ================= БАПТАУЛАР =================
+  let dlgSettings = null;
+  function fillSettingsFields() {
+    const prov = $('aiProvider').value;
+    const isG = prov === 'gemini';
+    $('apiKeyLabel').textContent = isG ? t('geminiKey') : t('apiKey');
+    $('apiKeyHint').textContent = isG ? t('geminiHint') : t('apiKeyHint');
+    $('apiKey').placeholder = isG ? 'AIza...' : 'sk-ant-...';
+    $('apiKey').value = dlgSettings.keys[prov] || '';
+    $('aiModel').value = dlgSettings.models[prov] || AI.DEFAULTS[prov];
+  }
+  function openSettings() {
+    dlgSettings = JSON.parse(JSON.stringify(AI.settings().all));
+    $('aiProvider').value = dlgSettings.provider;
+    $('aiProvider').dataset.prev = dlgSettings.provider;
+    fillSettingsFields();
+    $('settingsDlg').showModal();
+  }
+  function keepFields(prov) {
+    dlgSettings.keys[prov] = $('apiKey').value.trim();
+    dlgSettings.models[prov] = $('aiModel').value.trim() || AI.DEFAULTS[prov];
+  }
+  $('aiProvider').addEventListener('change', () => {
+    keepFields($('aiProvider').dataset.prev);
+    $('aiProvider').dataset.prev = $('aiProvider').value;
+    fillSettingsFields();
+  });
+  $('btnSettings').addEventListener('click', openSettings);
+  $('btnSaveSettings').addEventListener('click', () => {
+    keepFields($('aiProvider').value);
+    dlgSettings.provider = $('aiProvider').value;
+    AI.saveSettings(dlgSettings);
+    toast(t('saved'));
+  });
+
+  // ================= БАСТАУ =================
+  applyLang();
+};
+
+</script>
+  <script>
+/* =========================================================
+   auth.js — Аккаунттар және деректерді сақтау
+   Екі режим:
+   • ☁ Firebase (firebase-config.js толтырылса) — аккаунттар
+     Firebase Authentication-да, деректер Cloud Firestore-да.
+     Кез келген компьютерден кіруге болады.
+   • 💾 Жергілікті (конфиг бос болса) — бәрі осы браузерде.
+   Әкімші пайдаланушыларды тіркейді, бұғаттайды, рөлін өзгертеді
+   және олардың деректерін аша алады.
+   ========================================================= */
+(function (g) {
+  'use strict';
+  const t = k => I18N.t(k);
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  const wrap = store => ({
+    get(k) { try { return store().getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { store().setItem(k, v); return true; } catch (e) { return false; } },
+    del(k) { try { store().removeItem(k); } catch (e) { /* бос */ } }
+  });
+  const ls = wrap(() => localStorage), ss = wrap(() => sessionStorage);
+  const VIEW = 'sss_view_as';
+  const stateKey = id => 'sss_state_v1:' + id;
+  const aiKey = id => 'sss_ai:' + id;
+  const nowIso = () => new Date().toISOString();
+
+  class AuthError extends Error { constructor(code, detail) { super(code); this.code = code; this.detail = detail || ''; } }
+  const fail = (code, detail) => { throw new AuthError(code, detail); };
+  const errText = e => (e && e.code && I18N.t(e.code) !== e.code ? t(e.code) : t('errServer')) + (e && e.detail ? ' (' + e.detail + ')' : '');
+
+  // ---------- Конфиг ----------
+  const RAW = g.FIREBASE_CONFIG || {};
+  const CFG = RAW.apiKey && RAW.projectId ? RAW : null;
+  const LOGIN_DOMAIN = (RAW.loginDomain || 'eduschedule.local').toLowerCase();
+  const isEmail = s => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+  const validLogin = s => /^[A-Za-z0-9._-]{3,32}$/.test(s) || isEmail(s);
+  const loginToEmail = s => (s.includes('@') ? s : s + '@' + LOGIN_DOMAIN).toLowerCase();
+
+  // ---------- SHA-256 (жергілікті режимге) ----------
+  const sha256 = (function () {
+    const K = [], H0 = [];
+    let n = 2, found = 0;
+    const frac = x => ((x - Math.floor(x)) * 4294967296) | 0;
+    while (found < 64) {
+      let prime = true;
+      for (let f = 2; f * f <= n; f++) if (n % f === 0) { prime = false; break; }
+      if (prime) { if (found < 8) H0[found] = frac(Math.pow(n, 1 / 2)); K[found] = frac(Math.pow(n, 1 / 3)); found++; }
+      n++;
+    }
+    const ror = (x, r) => (x >>> r) | (x << (32 - r));
+    return function (str) {
+      const bytes = new TextEncoder().encode(str);
+      const len = bytes.length, total = ((len + 9 + 63) >> 6) << 6;
+      const m = new Uint8Array(total); m.set(bytes); m[len] = 0x80;
+      const dv = new DataView(m.buffer);
+      dv.setUint32(total - 4, (len * 8) >>> 0);
+      dv.setUint32(total - 8, Math.floor(len / 536870912));
+      const h = H0.slice(), w = new Int32Array(64);
+      for (let i = 0; i < total; i += 64) {
+        for (let j = 0; j < 16; j++) w[j] = dv.getInt32(i + j * 4);
+        for (let j = 16; j < 64; j++) {
+          const x = w[j - 15], y = w[j - 2];
+          w[j] = (w[j - 16] + (ror(x, 7) ^ ror(x, 18) ^ (x >>> 3)) + w[j - 7] + (ror(y, 17) ^ ror(y, 19) ^ (y >>> 10))) | 0;
+        }
+        let [a, b, c, d, e, f, gg, hh] = h;
+        for (let j = 0; j < 64; j++) {
+          const t1 = (hh + (ror(e, 6) ^ ror(e, 11) ^ ror(e, 25)) + ((e & f) ^ (~e & gg)) + K[j] + w[j]) | 0;
+          const t2 = ((ror(a, 2) ^ ror(a, 13) ^ ror(a, 22)) + ((a & b) ^ (a & c) ^ (b & c))) | 0;
+          hh = gg; gg = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
+        }
+        [a, b, c, d, e, f, gg, hh].forEach((v, k) => { h[k] = (h[k] + v) | 0; });
+      }
+      return h.map(x => (x >>> 0).toString(16).padStart(8, '0')).join('');
+    };
+  })();
+  const randHex = n => Array.from(crypto.getRandomValues(new Uint8Array(n)), b => b.toString(16).padStart(2, '0')).join('');
+  function randomPassword() {
+    const abc = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    return Array.from(crypto.getRandomValues(new Uint8Array(8)), b => abc[b % abc.length]).join('');
+  }
+  function newProfile(d) {
+    const login = d.login.trim();
+    return { name: d.name.trim(), login, email: loginToEmail(login), role: d.role === 'admin' ? 'admin' : 'user',
+             active: true, created: nowIso(), lastLogin: null, summary: null };
+  }
+
+  // =========================================================
+  // 💾 Жергілікті режим (localStorage)
+  // =========================================================
+  function LocalBackend() {
+    const USERS = 'sss_users', SESSION = 'sss_session';
+    const users = () => { try { return JSON.parse(ls.get(USERS) || '[]'); } catch (e) { return []; } };
+    const saveUsers = list => ls.set(USERS, JSON.stringify(list));
+    const hashPw = (pw, salt) => { let h = sha256(salt + '|' + pw); for (let i = 0; i < 999; i++) h = sha256(h + salt); return h; };
+    const pub = u => { const { salt, hash, ...rest } = u; return rest; };
+    let me = null;
+    function setPw(u, pw) { u.salt = randHex(16); u.hash = hashPw(pw, u.salt); }
+
+    return {
+      mode: 'local', canSetPassword: true,
+      async init() {
+        const id = ss.get(SESSION) || ls.get(SESSION);
+        const u = users().find(x => x.id === id && x.active !== false);
+        me = u ? pub(u) : null;
+        return me;
+      },
+      async needsSetup() { return !users().some(u => u.role === 'admin' && u.active !== false); },
+      async signIn(login, pw, remember) {
+        const list = users();
+        const u = list.find(x => x.login.toLowerCase() === login.toLowerCase());
+        if (!u || u.hash !== hashPw(pw, u.salt)) fail('authWrong');
+        if (u.active === false) fail('authBlocked');
+        u.lastLogin = nowIso(); saveUsers(list);
+        ss.set(SESSION, u.id);
+        if (remember) ls.set(SESSION, u.id); else ls.del(SESSION);
+        me = pub(u);
+        return me;
+      },
+      async signOut() { ss.del(SESSION); ls.del(SESSION); me = null; },
+      async setupAdmin(d, remember) {
+        const id = await this.createUser(Object.assign({}, d, { role: 'admin' }));
+        // аккаунттарға дейінгі ескі деректер — алғашқы әкімшіге
+        [['sss_state_v1', stateKey(id)], ['sss_ai', aiKey(id)]].forEach(([from, to]) => {
+          const v = ls.get(from);
+          if (v && !ls.get(to)) { ls.set(to, v); ls.del(from); }
+        });
+        return this.signIn(d.login, d.password, remember);
+      },
+      async listUsers() { return users().map(pub); },
+      async getUser(id) { const u = users().find(x => x.id === id); return u ? pub(u) : null; },
+      async createUser(d) {
+        const list = users();
+        if (list.some(u => u.login.toLowerCase() === d.login.toLowerCase())) fail('errExists');
+        const u = Object.assign({ id: 'u' + Date.now().toString(36) + randHex(3) }, newProfile(d));
+        setPw(u, d.password);
+        list.push(u); saveUsers(list);
+        return u.id;
+      },
+      async updateUser(id, patch) {
+        const list = users(), u = list.find(x => x.id === id);
+        if (u) { Object.assign(u, patch); saveUsers(list); }
+      },
+      async deleteUser(id) {
+        saveUsers(users().filter(x => x.id !== id));
+        ls.del(stateKey(id)); ls.del(aiKey(id));
+      },
+      async changeOwnPassword(oldPw, newPw) {
+        const list = users(), u = list.find(x => me && x.id === me.id);
+        if (!u || u.hash !== hashPw(oldPw, u.salt)) fail('errOldPwd');
+        setPw(u, newPw); saveUsers(list);
+      },
+      async setPassword(id, pw) {
+        const list = users(), u = list.find(x => x.id === id);
+        if (u) { setPw(u, pw); saveUsers(list); }
+      },
+      async loadState(id) { return ls.get(stateKey(id)); },
+      async saveState(id, json, summary) {
+        if (!ls.set(stateKey(id), json)) fail('errQuota');
+        const list = users(), u = list.find(x => x.id === id);
+        if (u) { u.summary = summary; saveUsers(list); }
+      }
+    };
+  }
+
+  // =========================================================
+  // ☁ Firebase режимі (Authentication + Cloud Firestore)
+  // =========================================================
+  function FirebaseBackend(rawCfg) {
+    const SDK = 'https://www.gstatic.com/firebasejs/13.4.0/';
+    const cfg = Object.assign({}, rawCfg); delete cfg.loginDomain;
+    const CHUNK = 300000; // Firestore құжаты ≤ 1 МБ, сондықтан деректер бөліктерге бөлінеді
+    let A, AU, F, app, auth, db, me = null;
+    const chunkCount = {};
+
+    function mapErr(e) {
+      if (e instanceof AuthError) return e;
+      const c = (e && e.code) || '';
+      if (/invalid-credential|wrong-password|user-not-found|invalid-email|invalid-login/.test(c)) return new AuthError('authWrong');
+      if (/email-already-in-use/.test(c)) return new AuthError('errExists');
+      if (/weak-password/.test(c)) return new AuthError('errPass');
+      if (/too-many-requests/.test(c)) return new AuthError('errTooMany');
+      if (/network-request-failed|unavailable|deadline-exceeded/.test(c)) return new AuthError('errNetwork');
+      if (/permission-denied|insufficient-permission/.test(c)) return new AuthError('errPermission');
+      if (/operation-not-allowed/.test(c)) return new AuthError('errProvider');
+      if (/api-key|invalid-api-key|configuration-not-found|project/.test(c)) return new AuthError('errConfig', c);
+      return new AuthError('errServer', c || (e && e.message) || '');
+    }
+    const safe = fn => async (...args) => { try { return await fn(...args); } catch (e) { throw mapErr(e); } };
+
+    const uref = id => F.doc(db, 'users', id);
+    const sref = id => F.doc(db, 'states', id);
+    const cref = (id, i) => F.doc(db, 'states', id, 'chunks', String(i));
+
+    async function profile(uid) {
+      const s = await F.getDoc(uref(uid));
+      return s.exists() ? Object.assign({ id: uid }, s.data()) : null;
+    }
+    async function requireProfile(user) {
+      const p = await profile(user.uid);
+      if (!p || p.active !== true) { await AU.signOut(auth); fail(p ? 'authBlocked' : 'authNoProfile'); }
+      me = p;
+      return p;
+    }
+    function splitJson(json) {
+      const parts = [];
+      let i = 0;
+      while (i < json.length) {
+        let end = Math.min(json.length, i + CHUNK);
+        const code = json.charCodeAt(end - 1);
+        if (end < json.length && code >= 0xD800 && code <= 0xDBFF) end--; // эмодзиді екіге бөлмеу
+        parts.push(json.slice(i, end)); i = end;
+      }
+      return parts;
+    }
+
+    const api = {
+      mode: 'firebase', canSetPassword: false,
+      async init() {
+        try {
+          [A, AU, F] = await Promise.all(['firebase-app.js', 'firebase-auth.js', 'firebase-firestore.js'].map(f => import(SDK + f)));
+        } catch (e) { fail('errSdk'); }
+        app = A.initializeApp(cfg);
+        auth = AU.getAuth(app);
+        try {
+          db = F.initializeFirestore(app, { localCache: F.persistentLocalCache({ tabManager: F.persistentMultipleTabManager() }) });
+        } catch (e) { db = F.getFirestore(app); }
+        const user = await new Promise(res => { const off = AU.onAuthStateChanged(auth, u => { off(); res(u); }); });
+        if (!user) return null;
+        try { return await requireProfile(user); } catch (e) { return null; }
+      },
+      async needsSetup() { return !(await F.getDoc(F.doc(db, 'meta', 'setup'))).exists(); },
+      async signIn(login, pw, remember) {
+        await AU.setPersistence(auth, remember ? AU.browserLocalPersistence : AU.browserSessionPersistence);
+        const c = await AU.signInWithEmailAndPassword(auth, loginToEmail(login), pw);
+        const p = await requireProfile(c.user);
+        F.updateDoc(uref(p.id), { lastLogin: nowIso() }).catch(() => {});
+        return p;
+      },
+      async signOut() { me = null; await AU.signOut(auth); },
+      async setupAdmin(d, remember) {
+        if (!(await api.needsSetup())) fail('errSetupDone');
+        await AU.setPersistence(auth, remember ? AU.browserLocalPersistence : AU.browserSessionPersistence);
+        const c = await AU.createUserWithEmailAndPassword(auth, loginToEmail(d.login), d.password);
+        const uid = c.user.uid;
+        const p = newProfile(Object.assign({}, d, { role: 'admin' }));
+        p.lastLogin = nowIso();
+        const b = F.writeBatch(db);
+        b.set(F.doc(db, 'meta', 'setup'), { admin: uid, at: nowIso() });
+        b.set(uref(uid), p);
+        try { await b.commit(); } catch (e) { await c.user.delete().catch(() => {}); throw e; }
+        me = Object.assign({ id: uid }, p);
+        const legacy = ls.get('sss_state_v1'); // серверге дейінгі деректер болса — бұлтқа көшіру
+        if (legacy) { try { await api.saveState(uid, legacy, null); ls.del('sss_state_v1'); } catch (e) { /* бос */ } }
+        return me;
+      },
+      async listUsers() {
+        const q = await F.getDocs(F.collection(db, 'users'));
+        return q.docs.map(d => Object.assign({ id: d.id }, d.data()))
+          .sort((a, b) => String(a.created).localeCompare(String(b.created)));
+      },
+      getUser: profile,
+      async createUser(d) {
+        // Әкімші шығып кетпеуі үшін жаңа аккаунт бөлек (екінші) Firebase данасында құрылады
+        const sec = A.initializeApp(cfg, 'reg-' + Date.now());
+        try {
+          const sa = AU.initializeAuth(sec, { persistence: AU.inMemoryPersistence });
+          const c = await AU.createUserWithEmailAndPassword(sa, loginToEmail(d.login), d.password);
+          const uid = c.user.uid;
+          await AU.signOut(sa);
+          await F.setDoc(uref(uid), newProfile(d));
+          return uid;
+        } finally { A.deleteApp(sec).catch(() => {}); }
+      },
+      async updateUser(id, patch) { await F.updateDoc(uref(id), patch); },
+      async deleteUser(id) {
+        const st = await F.getDoc(sref(id));
+        const b = F.writeBatch(db);
+        const n = st.exists() ? (st.data().chunks || 0) : 0;
+        for (let i = 0; i < n; i++) b.delete(cref(id, i));
+        if (st.exists()) b.delete(sref(id));
+        b.delete(uref(id));
+        await b.commit();
+        ls.del(aiKey(id));
+      },
+      async changeOwnPassword(oldPw, newPw) {
+        const u = auth.currentUser;
+        try { await AU.reauthenticateWithCredential(u, AU.EmailAuthProvider.credential(u.email, oldPw)); }
+        catch (e) { const m = mapErr(e); throw m.code === 'authWrong' ? new AuthError('errOldPwd') : m; }
+        await AU.updatePassword(u, newPw);
+      },
+      async resetPassword(u) {
+        if (!u.email || u.email.endsWith('@' + LOGIN_DOMAIN)) fail('resetUnsupported');
+        await AU.sendPasswordResetEmail(auth, u.email);
+        return u.email;
+      },
+      async loadState(id) {
+        const s = await F.getDoc(sref(id));
+        if (!s.exists()) { chunkCount[id] = 0; return null; }
+        const n = s.data().chunks || 0;
+        const parts = await Promise.all([...Array(n).keys()].map(i => F.getDoc(cref(id, i))));
+        if (parts.some(p => !p.exists())) fail('errLoad', 'chunks');
+        chunkCount[id] = n;
+        return parts.map(p => p.data().d).join('');
+      },
+      async saveState(id, json, summary) {
+        const parts = splitJson(json);
+        let prev = chunkCount[id];
+        if (prev === undefined) { const s = await F.getDoc(sref(id)); prev = s.exists() ? (s.data().chunks || 0) : 0; }
+        const b = F.writeBatch(db);
+        parts.forEach((d, i) => b.set(cref(id, i), { d }));
+        for (let i = parts.length; i < prev; i++) b.delete(cref(id, i));
+        b.set(sref(id), { chunks: parts.length, updated: nowIso(), by: me ? me.id : '', summary: summary || null });
+        b.update(uref(id), { summary: summary || null });
+        await b.commit();
+        chunkCount[id] = parts.length;
+      }
+    };
+    Object.keys(api).forEach(k => { if (typeof api[k] === 'function') api[k] = safe(api[k]); });
+    return api;
+  }
+
+  const B = CFG ? FirebaseBackend(CFG) : LocalBackend();
+
+  // =========================================================
+  // Интерфейс
+  // =========================================================
+  let me = null, viewUser = null, started = false, initialJson = null, mode = 'login', lastList = [];
+
+  function toast(msg, isError) {
+    const el = $('toast');
+    el.textContent = msg;
+    el.className = 'toast show' + (isError ? ' error' : '');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => { el.className = 'toast'; }, 4500);
+  }
+  const initials = name => String(name || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+  function fmtDate(isoStr) {
+    if (!isoStr) return t('never');
+    const d = new Date(isoStr), p = x => String(x).padStart(2, '0');
+    return `${p(d.getDate())}.${p(d.getMonth() + 1)}.${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+  }
+  const dataId = () => (viewUser ? viewUser.id : me ? me.id : 'guest');
+  function summarize(s) {
+    if (!s) return null;
+    return {
+      teachers: (s.teachers || []).length,
+      classes: Object.values(s.grades || {}).reduce((a, x) => a + (Number(x.count) || 0), 0),
+      schedules: (s.schedules || []).filter(Boolean).length
+    };
+  }
+  async function busy(btn, fn) {
+    btn.disabled = true;
+    try { return await fn(); } finally { btn.disabled = false; }
+  }
+
+  // ---------- Кіру беті ----------
+  function setBoot(text, withRetry) {
+    $('authBoot').hidden = !text;
+    $('authForm').hidden = !!text;
+    $('authBoot').innerHTML = text ? `<div class="alert ${withRetry ? 'bad' : ''}">${withRetry ? '' : '<span class="spinner"></span> '}${esc(text)}</div>
+      ${withRetry ? `<div class="btn-row"><button class="btn primary" type="button" id="btnRetry">${t('retry')}</button>
+      ${me ? `<button class="btn" type="button" id="btnBootOut">${t('logout')}</button>` : ''}</div>` : ''}` : '';
+    if (withRetry) {
+      $('btnRetry').addEventListener('click', () => location.reload());
+      if (me) $('btnBootOut').addEventListener('click', logout);
+    }
+  }
+  function paintAuth() {
+    I18N.apply($('authScreen'));
+    document.querySelectorAll('#authScreen .lang-switch button').forEach(b => b.classList.toggle('active', b.dataset.lang === I18N.lang));
+    const setup = mode === 'setup';
+    $('authTitle').textContent = t(setup ? 'setupTitle' : 'loginTitle');
+    $('authHint').textContent = t(setup ? 'setupHint' : 'loginHint');
+    $('fName').hidden = !setup;
+    $('fPass2').hidden = !setup;
+    $('authSubmit').textContent = t(setup ? 'createAdmin' : 'signIn');
+    $('authFoot').innerHTML = `<span class="pill ${B.mode === 'firebase' ? 'ok' : 'warn'}">${t(B.mode === 'firebase' ? 'modeCloud' : 'modeLocal')}</span><br>${t(B.mode === 'firebase' ? 'authFootCloud' : 'authFootLocal')}`;
+  }
+  function showAuthScreen() {
+    document.body.classList.add('locked');
+    $('authScreen').hidden = false;
+    paintAuth();
+  }
+  async function showLogin() {
+    showAuthScreen();
+    setBoot(t('loading'));
+    try { mode = (await B.needsSetup()) ? 'setup' : 'login'; }
+    catch (e) { mode = 'login'; }
+    setBoot('');
+    paintAuth();
+    setTimeout(() => (mode === 'setup' ? $('aName') : $('aLogin')).focus(), 50);
+  }
+
+  async function enter() {
+    showAuthScreen();
+    setBoot(t('loadingData'));
+    viewUser = null;
+    const vid = ss.get(VIEW);
+    if (vid && me.role === 'admin' && vid !== me.id) {
+      try { viewUser = await B.getUser(vid); } catch (e) { viewUser = null; }
+      if (!viewUser) ss.del(VIEW);
+    }
+    try { initialJson = await B.loadState(dataId()); }
+    catch (e) { setBoot(t('errLoad') + ' ' + errText(e), true); return; } // деректерді бұзып алмау үшін тоқтаймыз
+    $('authScreen').hidden = true;
+    document.body.classList.remove('locked');
+    paintChrome();
+    setSync(B.mode === 'firebase' ? 'ok' : 'local');
+    if (!started) { started = true; g.startApp(); }
+  }
+
+  $('authForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const err = msg => { $('authErr').textContent = msg; $('authErr').hidden = false; };
+    const login = $('aLogin').value.trim(), pw = $('aPass').value, remember = $('aRemember').checked;
+    $('authErr').hidden = true;
+    busy($('authSubmit'), async () => {
+      try {
+        if (mode === 'setup') {
+          const name = $('aName').value.trim();
+          if (!name) return err(t('errName'));
+          if (!validLogin(login)) return err(t('errLogin'));
+          if (pw.length < 6) return err(t('errPass'));
+          if (pw !== $('aPass2').value) return err(t('errPass2'));
+          me = await B.setupAdmin({ name, login, password: pw }, remember);
+        } else {
+          if (!login || !pw) return err(t('authWrong'));
+          me = await B.signIn(login, pw, remember);
+        }
+        $('aPass').value = ''; $('aPass2').value = '';
+        await enter();
+      } catch (ex) { err(errText(ex)); }
+    });
+  });
+  document.querySelectorAll('#authScreen .lang-switch button').forEach(b => b.addEventListener('click', () => {
+    I18N.setLang(b.dataset.lang); paintAuth();
+  }));
+
+  // ---------- Деректерді сақтау (бұлтқа / браузерге) ----------
+  let pending = null, inflight = null, timer = null;
+  function setSync(st, e) {
+    const el = $('syncStatus');
+    el.className = 'sync ' + st;
+    el.textContent = { local: '💾 ' + t('syncLocal'), ok: '☁ ' + t('syncOk'), saving: '⟳ ' + t('syncSaving'), error: '⚠ ' + t('syncError') }[st];
+    el.title = st === 'error' ? errText(e) + ' — ' + t('syncRetry') : '';
+  }
+  function persist(stateObj) {
+    pending = { json: JSON.stringify(stateObj), summary: summarize(stateObj) };
+    if (B.mode === 'local') { flush(); return; }
+    setSync('saving');
+    clearTimeout(timer);
+    timer = setTimeout(flush, 1200);
+  }
+  function flush() {
+    clearTimeout(timer);
+    if (inflight) return inflight.then(() => (pending ? flush() : null));
+    if (!pending) return Promise.resolve();
+    const job = pending; pending = null;
+    inflight = B.saveState(dataId(), job.json, job.summary)
+      .then(() => { if (!pending) setSync(B.mode === 'firebase' ? 'ok' : 'local'); })
+      .catch(e => { if (!pending) pending = job; setSync('error', e); toast(t('syncError') + ': ' + errText(e), true); })
+      .finally(() => { inflight = null; });
+    return inflight;
+  }
+  $('syncStatus').addEventListener('click', () => { if (pending) { setSync('saving'); flush(); } });
+  window.addEventListener('beforeunload', e => {
+    if (pending || inflight) { flush(); e.preventDefault(); e.returnValue = ''; }
+  });
+
+  async function logout() {
+    try { await flush(); } catch (e) { /* бос */ }
+    if (pending && !confirm(t('confirmUnsaved'))) return;
+    pending = null;
+    ss.del(VIEW);
+    try { await B.signOut(); } catch (e) { /* бос */ }
+    location.reload();
+  }
+  function switchData(id) {
+    const go = () => { if (id && id !== me.id) ss.set(VIEW, id); else ss.del(VIEW); location.reload(); };
+    flush().then(go, go);
+  }
+
+  // ---------- Жоғарғы панель ----------
+  function paintChrome() {
+    if (!me) return;
+    $('userName').textContent = me.name;
+    $('userRole').textContent = t(me.role === 'admin' ? 'roleAdmin' : 'roleUser');
+    $('userAvatar').textContent = initials(me.name);
+    $('tabUsersBtn').hidden = me.role !== 'admin';
+    const bar = $('viewAsBar');
+    if (viewUser) {
+      bar.hidden = false;
+      bar.innerHTML = `<span>👁 ${t('viewingAs')} <b>${esc(viewUser.name)}</b> (${esc(viewUser.login)})</span><span class="spacer"></span>
+        <button class="btn sm" id="btnBackMine">${t('backToMine')}</button>`;
+      $('btnBackMine').addEventListener('click', () => switchData(null));
+    } else bar.hidden = true;
+  }
+  $('btnLogout').addEventListener('click', logout);
+  $('btnPassword').addEventListener('click', () => { if (me) openPwd(me, true); });
+
+  // ---------- Құпиясөз диалогы ----------
+  let pwdTarget = null, pwdSelf = false;
+  function openPwd(u, self) {
+    pwdTarget = u.id; pwdSelf = self;
+    $('pwdFor').textContent = `${u.name} · ${u.login}`;
+    $('pwdOldWrap').hidden = !self;
+    $('pwdOld').value = ''; $('pwdNew').value = self ? '' : randomPassword();
+    $('pwdNew').type = self ? 'password' : 'text';
+    $('pwdErr').hidden = true;
+    $('pwdDlg').showModal();
+  }
+  $('pwdCancel').addEventListener('click', () => $('pwdDlg').close());
+  $('pwdForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const failMsg = m => { $('pwdErr').textContent = m; $('pwdErr').hidden = false; };
+    const np = $('pwdNew').value;
+    if (np.length < 6) return failMsg(t('errPass'));
+    busy($('pwdSave'), async () => {
+      try {
+        if (pwdSelf) await B.changeOwnPassword($('pwdOld').value, np);
+        else await B.setPassword(pwdTarget, np);
+        $('pwdDlg').close();
+        toast(t('pwdChanged') + (pwdSelf ? '' : ': ' + np));
+      } catch (ex) { failMsg(errText(ex)); }
+    });
+  });
+
+  // ---------- Пайдаланушылар беті (тек әкімшіге) ----------
+  const activeAdmins = list => list.filter(u => u.role === 'admin' && u.active !== false);
+  async function renderUsers() {
+    if (!me || me.role !== 'admin') return;
+    const roleOpts = sel => ['user', 'admin'].map(r => `<option value="${r}" ${sel === r ? 'selected' : ''}>${t(r === 'admin' ? 'roleAdmin' : 'roleUser')}</option>`).join('');
+    $('uRole').innerHTML = roleOpts($('uRole').value || 'user');
+    $('usersMode').innerHTML = `<span class="pill ${B.mode === 'firebase' ? 'ok' : 'warn'}">${t(B.mode === 'firebase' ? 'modeCloud' : 'modeLocal')}</span>`;
+    if (!lastList.length) $('userTable').innerHTML = `<tr><td class="empty"><span class="spinner"></span></td></tr>`;
+    try { lastList = await B.listUsers(); }
+    catch (e) { $('userTable').innerHTML = `<tr><td><div class="alert bad">${esc(errText(e))}</div></td></tr>`; return; }
+    $('userCount').textContent = lastList.length;
+    let h = `<tr><th>#</th><th>${t('fullName')}</th><th>${t('login')}</th><th>${t('role')}</th><th>${t('dataCol')}</th>
+      <th>${t('lastLogin')}</th><th>${t('status')}</th><th></th></tr>`;
+    lastList.forEach((u, i) => {
+      const self = u.id === me.id, st = u.summary, on = u.active !== false;
+      const data = st ? `${st.teachers} ${t('statTeachers')} · ${st.classes} ${t('statClasses')} · ${st.schedules}/4 ${t('statSchedules')}` : `<span class="muted">${t('noData')}</span>`;
+      h += `<tr class="${on ? '' : 'muted'}"><td>${i + 1}</td>
+        <td><span class="avatar sm">${esc(initials(u.name))}</span> <b>${esc(u.name)}</b>${self ? ` <small class="muted">(${t('you')})</small>` : ''}</td>
+        <td><code>${esc(u.login)}</code></td>
+        <td><select class="role-sel" data-role="${u.id}" ${self ? 'disabled' : ''}>${roleOpts(u.role)}</select></td>
+        <td class="nowrap">${data}</td>
+        <td class="nowrap">${fmtDate(u.lastLogin)}</td>
+        <td><span class="pill ${on ? 'ok' : 'bad'}">${t(on ? 'active' : 'blocked')}</span></td>
+        <td class="nowrap">
+          <button class="btn sm" data-act="view" data-id="${u.id}">📂 ${t('openData')}</button>
+          ${self ? '' : `<button class="btn sm" data-act="pwd" data-id="${u.id}">🔑 ${t('resetPwd')}</button>
+          <button class="btn sm" data-act="toggle" data-id="${u.id}">${t(on ? 'block' : 'unblock')}</button>
+          <button class="btn sm danger" data-act="del" data-id="${u.id}">${t('del')}</button>`}
+        </td></tr>`;
+    });
+    $('userTable').innerHTML = h;
+  }
+
+  $('userTable').addEventListener('click', e => {
+    const b = e.target.closest('button[data-act]');
+    if (!b || !me || me.role !== 'admin') return;
+    const u = lastList.find(x => x.id === b.dataset.id);
+    if (!u) return;
+    const act = b.dataset.act;
+    if (act === 'view') return switchData(u.id);
+    if (u.id === me.id) return;
+    busy(b, async () => {
+      try {
+        if (act === 'pwd') {
+          if (B.canSetPassword) return openPwd(u, false);
+          const sentTo = await B.resetPassword(u);
+          toast(t('resetSent') + ': ' + sentTo);
+        } else if (act === 'toggle') {
+          if (u.active !== false && u.role === 'admin' && activeAdmins(lastList).length <= 1) return toast(t('lastAdmin'), true);
+          await B.updateUser(u.id, { active: u.active === false });
+          await renderUsers();
+        } else if (act === 'del') {
+          if (!confirm(t('confirmDelUser') + '\n\n' + u.name + ' (' + u.login + ')')) return;
+          await B.deleteUser(u.id);
+          if (viewUser && viewUser.id === u.id) { ss.del(VIEW); location.reload(); return; }
+          await renderUsers(); toast(t('saved'));
+        }
+      } catch (ex) {
+        if (ex.code === 'resetUnsupported') alert(t('resetUnsupported'));
+        else toast(errText(ex), true);
+      }
+    });
+  });
+  $('userTable').addEventListener('change', async e => {
+    const s = e.target.closest('select[data-role]');
+    if (!s) return;
+    const u = lastList.find(x => x.id === s.dataset.role);
+    if (!me || !u || u.id === me.id) return renderUsers();
+    if (u.role === 'admin' && s.value !== 'admin' && activeAdmins(lastList).length <= 1) { toast(t('lastAdmin'), true); return renderUsers(); }
+    try { await B.updateUser(u.id, { role: s.value }); toast(t('saved')); } catch (ex) { toast(errText(ex), true); }
+    renderUsers();
+  });
+
+  $('btnGenPwd').addEventListener('click', () => { $('uPass').value = randomPassword(); });
+  $('btnAddUser').addEventListener('click', () => {
+    const d = { name: $('uName').value.trim(), login: $('uLogin').value.trim(), password: $('uPass').value, role: $('uRole').value };
+    if (!d.name) return toast(t('errName'), true);
+    if (!validLogin(d.login)) return toast(t('errLogin'), true);
+    if (d.password.length < 6) return toast(t('errPass'), true);
+    busy($('btnAddUser'), async () => {
+      try {
+        await B.createUser(d);
+        toast(t('userAdded') + ': ' + d.login + ' / ' + d.password);
+        $('uName').value = ''; $('uLogin').value = ''; $('uPass').value = '';
+        await renderUsers();
+      } catch (ex) { toast(errText(ex), true); }
+    });
+  });
+
+  function onLang() {
+    if (!$('authScreen').hidden) paintAuth();
+    paintChrome();
+    if ($('syncStatus').className) setSync($('syncStatus').className.replace('sync ', '') || 'local');
+  }
+
+  g.Auth = {
+    get mode() { return B.mode; },
+    current: () => me, dataId, renderUsers, onLang, logout,
+    initialState: () => initialJson, persist, flush, _sha256: sha256
+  };
+
+  // ---------- Бастау ----------
+  (async function boot() {
+    showAuthScreen();
+    setBoot(t('loading'));
+    try { me = await B.init(); }
+    catch (e) { setBoot(errText(e), true); return; }
+    if (me) await enter(); else await showLogin();
+  })();
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+</body>
+</html>
